@@ -1,0 +1,1054 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python爬虫入门到实战 - 新手引导课程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+            min-height: 100vh;
+        }
+        .header {
+            background: linear-gradient(135deg, #00a1d6 0%, #00c3ff 100%);
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 161, 214, 0.3);
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .header-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .btn {
+            padding: 10px 24px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+        }
+        .btn-primary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            backdrop-filter: blur(10px);
+        }
+        .btn-primary:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .btn-action {
+            background: #ff6b35;
+            color: #fff;
+        }
+        .btn-action:hover {
+            background: #ff8552;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+        }
+        .main-container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            gap: 20px;
+        }
+        .video-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .video-player {
+            background: #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+            position: relative;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+        .video-player img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: opacity 0.3s;
+        }
+        .video-overlay:hover {
+            background: rgba(0, 0, 0, 0.5);
+        }
+        .play-btn {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+        .play-btn:hover {
+            transform: scale(1.1);
+        }
+        .play-btn svg {
+            width: 32px;
+            height: 32px;
+            fill: #00a1d6;
+            margin-left: 6px;
+        }
+        .video-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            padding: 0 10px;
+        }
+        .video-info {
+            display: flex;
+            gap: 20px;
+            padding: 0 10px;
+            color: #999;
+            font-size: 13px;
+        }
+        .video-controls {
+            background: #1a1a1a;
+            border-radius: 12px;
+            padding: 15px 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #333;
+            border-radius: 3px;
+            cursor: pointer;
+            position: relative;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00a1d6, #00c3ff);
+            border-radius: 3px;
+            width: 30%;
+        }
+        .time-display {
+            font-size: 13px;
+            color: #999;
+            min-width: 100px;
+        }
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        .control-btn svg {
+            width: 18px;
+            height: 18px;
+            fill: #fff;
+        }
+        .sidebar {
+            width: 360px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .course-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        .course-cover {
+            height: 180px;
+            position: relative;
+        }
+        .course-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .course-cover-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+        }
+        .course-info {
+            padding: 20px;
+        }
+        .course-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #fff;
+        }
+        .course-desc {
+            font-size: 14px;
+            color: #999;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        .course-stats {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+        }
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #999;
+            font-size: 13px;
+        }
+        .stat-item svg {
+            width: 16px;
+            height: 16px;
+            fill: #00a1d6;
+        }
+        .course-teacher {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .teacher-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00a1d6, #00c3ff);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .teacher-info {
+            flex: 1;
+        }
+        .teacher-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+        }
+        .teacher-title {
+            font-size: 12px;
+            color: #999;
+        }
+        .chapter-list {
+            background: #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .chapter-header {
+            padding: 15px 20px;
+            background: rgba(0, 161, 214, 0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .chapter-header h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .chapter-count {
+            font-size: 12px;
+            color: #999;
+        }
+        .chapter-items {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+        }
+        .chapter-item {
+            margin-bottom: 10px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .chapter-title-bar {
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .chapter-title-bar:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+        .chapter-title-bar.active {
+            background: rgba(0, 161, 214, 0.2);
+        }
+        .chapter-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chapter-title-number {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(135deg, #00a1d6, #00c3ff);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .chapter-duration {
+            font-size: 12px;
+            color: #999;
+        }
+        .chapter-arrow {
+            font-size: 12px;
+            color: #999;
+            transition: transform 0.3s;
+        }
+        .chapter-title-bar.active .chapter-arrow {
+            transform: rotate(90deg);
+        }
+        .lesson-list {
+            display: none;
+            padding: 5px 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .chapter-item.active .lesson-list {
+            display: block;
+        }
+        .lesson-item {
+            padding: 10px 15px 10px 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: background 0.3s;
+            border-left: 3px solid transparent;
+        }
+        .lesson-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+        .lesson-item.active {
+            background: rgba(0, 161, 214, 0.15);
+            border-left-color: #00a1d6;
+        }
+        .lesson-title {
+            font-size: 13px;
+            color: #e0e0e0;
+            flex: 1;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .lesson-duration {
+            font-size: 12px;
+            color: #666;
+            margin-left: 10px;
+        }
+        .lesson-play-icon {
+            width: 28px;
+            height: 28px;
+            background: rgba(0, 161, 214, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 10px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .lesson-item:hover .lesson-play-icon {
+            opacity: 1;
+        }
+        .lesson-play-icon svg {
+            width: 12px;
+            height: 12px;
+            fill: #00a1d6;
+            margin-left: 2px;
+        }
+        .knowledge-panel {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .knowledge-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .knowledge-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #5856d6, #af52de);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .knowledge-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .knowledge-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .knowledge-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 15px;
+            transition: transform 0.3s, background 0.3s;
+            cursor: pointer;
+        }
+        .knowledge-card:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+        .knowledge-card-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+            margin-bottom: 8px;
+        }
+        .knowledge-card-content {
+            font-size: 13px;
+            color: #999;
+            line-height: 1.5;
+        }
+        .knowledge-card-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 11px;
+            margin-bottom: 10px;
+        }
+        .tag-summary {
+            background: rgba(0, 161, 214, 0.2);
+            color: #00c3ff;
+        }
+        .tag-tip {
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff8552;
+        }
+        .tag-comparison {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+        }
+        .detail-panel {
+            background: #1a1a1a;
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+        .detail-panel.active {
+            display: block;
+        }
+        .detail-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .detail-close {
+            font-size: 14px;
+            color: #999;
+            cursor: pointer;
+            margin-left: auto;
+        }
+        .detail-close:hover {
+            color: #fff;
+        }
+        .knowledge-item {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .knowledge-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        .knowledge-item-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .knowledge-item-type {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .type-definition {
+            background: rgba(92, 132, 255, 0.2);
+            color: #5c84ff;
+        }
+        .type-concept {
+            background: rgba(0, 161, 214, 0.2);
+            color: #00c3ff;
+        }
+        .type-note {
+            background: rgba(255, 107, 53, 0.2);
+            color: #ff8552;
+        }
+        .type-code {
+            background: rgba(52, 211, 153, 0.2);
+            color: #34d399;
+        }
+        .type-reference {
+            background: rgba(168, 85, 247, 0.2);
+            color: #a855f7;
+        }
+        .type-structure {
+            background: rgba(251, 146, 60, 0.2);
+            color: #fb923c;
+        }
+        .type-tool {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+        }
+        .knowledge-item-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #fff;
+        }
+        .knowledge-item-content {
+            font-size: 14px;
+            color: #e0e0e0;
+            line-height: 1.6;
+            padding-left: 15px;
+        }
+        .knowledge-item-content code {
+            background: rgba(0, 0, 0, 0.4);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            color: #34d399;
+        }
+        .code-block {
+            background: #0d0d0d;
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        .code-block pre {
+            margin: 0;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+        .code-block code {
+            background: none !important;
+            padding: 0 !important;
+            color: inherit !important;
+        }
+        .footer {
+            background: #1a1a1a;
+            padding: 30px 40px;
+            margin-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .footer-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-links {
+            display: flex;
+            gap: 20px;
+        }
+        .footer-links a {
+            color: #999;
+            font-size: 13px;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #00a1d6;
+        }
+        .footer-copyright {
+            color: #666;
+            font-size: 13px;
+        }
+        @media (max-width: 1024px) {
+            .main-container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+            }
+        }
+        @media (max-width: 600px) {
+            .header {
+                padding: 15px 20px;
+            }
+            .header-title {
+                font-size: 16px;
+            }
+            .btn {
+                padding: 8px 16px;
+                font-size: 12px;
+            }
+            .video-info {
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <div class="header-logo">🐍</div>
+            <div class="header-title">Python爬虫入门到实战</div>
+        </div>
+        <div class="header-right">
+            <button class="btn btn-primary">收藏课程</button>
+            <button class="btn btn-primary">分享</button>
+            <button class="btn btn-action">立即学习</button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="video-section">
+            <div class="video-player">
+                <img id="videoThumbnail" src="" alt="视频封面">
+                <div class="video-overlay" onclick="playVideo()">
+                    <div class="play-btn">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                    <div style="margin-top: 15px; font-size: 16px; font-weight: 500;">点击播放视频</div>
+                </div>
+            </div>
+            <div class="video-title" id="videoTitle">请选择一个章节开始学习</div>
+            <div class="video-info">
+                <span>讲师：<span style="color: #00c3ff;">爬虫入门导师</span></span>
+                <span>|</span>
+                <span id="videoDuration">00:00</span>
+                <span>|</span>
+                <span>已学习：<span style="color: #34d399;">0%</span></span>
+            </div>
+            <div class="video-controls">
+                <div class="control-btn" onclick="playPrev()">
+                    <svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
+                </div>
+                <div class="control-btn" onclick="togglePlay()">
+                    <svg id="playIcon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="control-btn" onclick="playNext()">
+                    <svg viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+                <div class="time-display">00:00 / 00:00</div>
+                <div class="control-btn" onclick="toggleFullscreen()">
+                    <svg viewBox="0 0 24 24"><path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/></svg>
+                </div>
+            </div>
+
+            <div class="knowledge-panel">
+                <div class="knowledge-header">
+                    <div class="knowledge-icon">📚</div>
+                    <div class="knowledge-title">核心知识点</div>
+                </div>
+                <div class="knowledge-content" id="knowledgePoints">
+                </div>
+            </div>
+
+            <div class="detail-panel" id="detailPanel">
+                <div class="detail-title">
+                    <span>📖 知识点详情</span>
+                    <span class="detail-close" onclick="closeDetail()">✕</span>
+                </div>
+                <div id="detailContent">
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="course-card">
+                <div class="course-cover">
+                    <img id="courseCover" src="" alt="课程封面">
+                    <div class="course-cover-overlay"></div>
+                </div>
+                <div class="course-info">
+                    <h2 class="course-title" id="courseTitle">Python爬虫入门到实战</h2>
+                    <p class="course-desc" id="courseDesc">专为大学生设计的爬虫新手引导课程，从基础概念到实战项目，带你快速掌握Python爬虫技术</p>
+                    <div class="course-stats">
+                        <div class="stat-item">
+                            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                            <span id="courseStudents">0</span>人学习
+                        </div>
+                        <div class="stat-item">
+                            <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67V7z"/></svg>
+                            <span id="courseDuration">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+                            <span id="courseLessons">0</span>节课程
+                        </div>
+                    </div>
+                    <div class="course-teacher">
+                        <div class="teacher-avatar">👨‍🏫</div>
+                        <div class="teacher-info">
+                            <div class="teacher-name" id="courseTeacher">爬虫入门导师</div>
+                            <div class="teacher-title">资深Python开发工程师</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chapter-list">
+                <div class="chapter-header">
+                    <h3>课程目录</h3>
+                    <span class="chapter-count" id="chapterCount">0章</span>
+                </div>
+                <div class="chapter-items" id="chapterList">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-content">
+            <div class="footer-links">
+                <a href="#">关于我们</a>
+                <a href="#">帮助中心</a>
+                <a href="#">用户协议</a>
+                <a href="#">隐私政策</a>
+            </div>
+            <div class="footer-copyright">© 2024 Python爬虫入门课程. All rights reserved.</div>
+        </div>
+    </div>
+
+    <script>
+        let courseData = null;
+        let currentChapter = 0;
+        let currentLesson = 0;
+        let isPlaying = false;
+
+        async function loadCourseData() {
+            try {
+                const response = await fetch('spider-knowledge.json');
+                courseData = await response.json();
+                renderCourseInfo();
+                renderChapterList();
+                renderKnowledgePoints();
+                selectFirstLesson();
+            } catch (error) {
+                console.error('加载课程数据失败:', error);
+            }
+        }
+
+        function renderCourseInfo() {
+            const course = courseData.course;
+            document.getElementById('courseTitle').textContent = course.title;
+            document.getElementById('courseDesc').textContent = course.description;
+            document.getElementById('courseCover').src = course.cover;
+            document.getElementById('courseTeacher').textContent = course.teacher;
+            document.getElementById('courseDuration').textContent = course.duration;
+            document.getElementById('courseLessons').textContent = course.lessons;
+            document.getElementById('courseStudents').textContent = course.students.toLocaleString();
+            document.getElementById('chapterCount').textContent = courseData.chapters.length + '章';
+        }
+
+        function renderChapterList() {
+            const container = document.getElementById('chapterList');
+            container.innerHTML = '';
+
+            courseData.chapters.forEach((chapter, chapterIndex) => {
+                const chapterItem = document.createElement('div');
+                chapterItem.className = 'chapter-item';
+                chapterItem.innerHTML = `
+                    <div class="chapter-title-bar" onclick="toggleChapter(${chapterIndex})">
+                        <div class="chapter-title">
+                            <span class="chapter-title-number">${chapter.id}</span>
+                            <span>${chapter.title}</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span class="chapter-duration">${chapter.duration}</span>
+                            <span class="chapter-arrow">▶</span>
+                        </div>
+                    </div>
+                    <div class="lesson-list">
+                        ${chapter.lessons.map((lesson, lessonIndex) => `
+                            <div class="lesson-item" onclick="selectLesson(${chapterIndex}, ${lessonIndex})">
+                                <span class="lesson-title">${lesson.title}</span>
+                                <span class="lesson-duration">${lesson.duration}</span>
+                                <div class="lesson-play-icon">
+                                    <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(chapterItem);
+            });
+        }
+
+        function toggleChapter(chapterIndex) {
+            const chapters = document.querySelectorAll('.chapter-item');
+            chapters[chapterIndex].classList.toggle('active');
+        }
+
+        function selectLesson(chapterIndex, lessonIndex) {
+            currentChapter = chapterIndex;
+            currentLesson = lessonIndex;
+
+            document.querySelectorAll('.lesson-item').forEach(item => item.classList.remove('active'));
+            const lessonItems = document.querySelectorAll('.lesson-item');
+            let count = 0;
+            for (let i = 0; i <= chapterIndex; i++) {
+                if (i < chapterIndex) {
+                    count += courseData.chapters[i].lessons.length;
+                } else {
+                    lessonItems[count + lessonIndex].classList.add('active');
+                }
+            }
+
+            const chapter = courseData.chapters[chapterIndex];
+            const lesson = chapter.lessons[lessonIndex];
+
+            document.getElementById('videoTitle').textContent = lesson.title;
+            document.getElementById('videoDuration').textContent = lesson.duration;
+            document.getElementById('videoThumbnail').src = lesson.video;
+
+            renderLessonKnowledge(lesson.knowledge);
+            openDetail();
+        }
+
+        function selectFirstLesson() {
+            document.querySelector('.chapter-item').classList.add('active');
+            selectLesson(0, 0);
+        }
+
+        function renderKnowledgePoints() {
+            const container = document.getElementById('knowledgePoints');
+            container.innerHTML = '';
+
+            courseData.knowledge_points.forEach(point => {
+                const card = document.createElement('div');
+                card.className = 'knowledge-card';
+                card.onclick = () => showKnowledgeDetail(point);
+                let tagClass = 'tag-summary';
+                if (point.type === 'tip') tagClass = 'tag-tip';
+                if (point.type === 'comparison') tagClass = 'tag-comparison';
+                
+                card.innerHTML = `
+                    <span class="knowledge-card-tag ${tagClass}">${point.type === 'summary' ? '总结' : point.type === 'tip' ? '技巧' : '对比'}</span>
+                    <div class="knowledge-card-title">${point.title}</div>
+                    <div class="knowledge-card-content">${point.content}</div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderLessonKnowledge(knowledgeList) {
+            const container = document.getElementById('detailContent');
+            container.innerHTML = '';
+
+            knowledgeList.forEach(item => {
+                const knowledgeItem = document.createElement('div');
+                knowledgeItem.className = 'knowledge-item';
+                
+                let typeClass = 'type-definition';
+                let typeLabel = '定义';
+                switch(item.type) {
+                    case 'concept': typeClass = 'type-concept'; typeLabel = '概念'; break;
+                    case 'note': typeClass = 'type-note'; typeLabel = '注意'; break;
+                    case 'code': typeClass = 'type-code'; typeLabel = '代码'; break;
+                    case 'reference': typeClass = 'type-reference'; typeLabel = '参考'; break;
+                    case 'structure': typeClass = 'type-structure'; typeLabel = '结构'; break;
+                    case 'tool': typeClass = 'type-tool'; typeLabel = '工具'; break;
+                }
+
+                let contentHtml = item.content;
+                if (item.type === 'code') {
+                    contentHtml = `<div class="code-block"><pre><code>${item.content}</code></pre></div>`;
+                } else {
+                    contentHtml = item.content.replace(/(\n)/g, '<br>');
+                }
+
+                knowledgeItem.innerHTML = `
+                    <div class="knowledge-item-header">
+                        <span class="knowledge-item-type ${typeClass}">${typeLabel}</span>
+                        <span class="knowledge-item-title">${item.title}</span>
+                    </div>
+                    <div class="knowledge-item-content">${contentHtml}</div>
+                `;
+                container.appendChild(knowledgeItem);
+            });
+        }
+
+        function showKnowledgeDetail(point) {
+            const container = document.getElementById('detailContent');
+            container.innerHTML = `
+                <div class="knowledge-item">
+                    <div class="knowledge-item-header">
+                        <span class="knowledge-item-type ${point.type === 'summary' ? 'type-summary' : point.type === 'tip' ? 'type-tip' : 'type-comparison'}">${point.type === 'summary' ? '总结' : point.type === 'tip' ? '技巧' : '对比'}</span>
+                        <span class="knowledge-item-title">${point.title}</span>
+                    </div>
+                    <div class="knowledge-item-content">${point.content}</div>
+                </div>
+            `;
+            openDetail();
+        }
+
+        function openDetail() {
+            document.getElementById('detailPanel').classList.add('active');
+        }
+
+        function closeDetail() {
+            document.getElementById('detailPanel').classList.remove('active');
+        }
+
+        function playVideo() {
+            isPlaying = true;
+            document.getElementById('playIcon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+        }
+
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                document.getElementById('playIcon').innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+            } else {
+                document.getElementById('playIcon').innerHTML = '<path d="M8 5v14l11-7z"/>';
+            }
+        }
+
+        function playPrev() {
+            let totalLessons = 0;
+            for (let i = 0; i <= currentChapter; i++) {
+                totalLessons += courseData.chapters[i].lessons.length;
+            }
+            let currentTotal = totalLessons - courseData.chapters[currentChapter].lessons.length + currentLesson;
+            
+            if (currentTotal > 0) {
+                currentTotal--;
+                let chapterIndex = 0;
+                let lessonIndex = 0;
+                let count = 0;
+                for (let i = 0; i < courseData.chapters.length; i++) {
+                    if (count + courseData.chapters[i].lessons.length > currentTotal) {
+                        chapterIndex = i;
+                        lessonIndex = currentTotal - count;
+                        break;
+                    }
+                    count += courseData.chapters[i].lessons.length;
+                }
+                selectLesson(chapterIndex, lessonIndex);
+            }
+        }
+
+        function playNext() {
+            let totalLessons = 0;
+            for (let i = 0; i < courseData.chapters.length; i++) {
+                totalLessons += courseData.chapters[i].lessons.length;
+            }
+            let currentTotal = 0;
+            for (let i = 0; i < currentChapter; i++) {
+                currentTotal += courseData.chapters[i].lessons.length;
+            }
+            currentTotal += currentLesson;
+            
+            if (currentTotal < totalLessons - 1) {
+                currentTotal++;
+                let chapterIndex = 0;
+                let lessonIndex = 0;
+                let count = 0;
+                for (let i = 0; i < courseData.chapters.length; i++) {
+                    if (count + courseData.chapters[i].lessons.length > currentTotal) {
+                        chapterIndex = i;
+                        lessonIndex = currentTotal - count;
+                        break;
+                    }
+                    count += courseData.chapters[i].lessons.length;
+                }
+                selectLesson(chapterIndex, lessonIndex);
+            }
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadCourseData);
+    </script>
+</body>
+</html>

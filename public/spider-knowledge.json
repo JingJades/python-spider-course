@@ -1,0 +1,482 @@
+{
+  "course": {
+    "title": "Python爬虫入门到实战",
+    "description": "专为大学生设计的爬虫新手引导课程，从基础概念到实战项目，带你快速掌握Python爬虫技术",
+    "cover": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Python%20web%20scraping%20course%20cover%20with%20code%20and%20internet%20data%20visualization%20modern%20design&image_size=landscape_16_9",
+    "teacher": "爬虫入门导师",
+    "duration": "6小时30分钟",
+    "lessons": 24,
+    "students": 12580
+  },
+  "chapters": [
+    {
+      "id": 1,
+      "title": "第一章：爬虫基础概念",
+      "duration": "45分钟",
+      "lessons": [
+        {
+          "id": "1-1",
+          "title": "什么是爬虫？",
+          "duration": "15分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=web%20crawler%20concept%20illustration%20with%20spider%20on%20web%20pages&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "definition",
+              "title": "爬虫定义",
+              "content": "爬虫（Web Scraping）是指通过编写程序从互联网上自动提取信息的过程。爬虫程序可以模拟浏览器行为，访问网页并提取有价值的数据。"
+            },
+            {
+              "type": "concept",
+              "title": "爬虫的应用场景",
+              "content": "数据采集、舆情监控、竞品分析、搜索引擎、内容聚合、自动化测试等"
+            },
+            {
+              "type": "note",
+              "title": "合法合规提醒",
+              "content": "爬虫需遵守网站robots协议，尊重网站版权，避免对服务器造成压力"
+            }
+          ]
+        },
+        {
+          "id": "1-2",
+          "title": "Python爬虫架构",
+          "duration": "15分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Python%20crawler%20architecture%20diagram%20with%20components%20flowchart&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "structure",
+              "title": "爬虫五大组成部分",
+              "content": "1.调度器：协调各模块工作；2.URL管理器：管理待爬和已爬URL；3.网页下载器：获取网页内容；4.网页解析器：提取有用信息；5.应用程序：存储和使用数据"
+            },
+            {
+              "type": "tool",
+              "title": "URL管理器实现方式",
+              "content": "内存方式（简单但数据易丢失）、数据库方式（持久化存储）、缓存数据库方式（高性能）"
+            }
+          ]
+        },
+        {
+          "id": "1-3",
+          "title": "HTTP协议基础",
+          "duration": "15分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=HTTP%20protocol%20explained%20with%20request%20response%20diagram&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "concept",
+              "title": "HTTP请求方法",
+              "content": "GET：获取资源；POST：提交数据；PUT：更新资源；DELETE：删除资源；HEAD：获取响应头"
+            },
+            {
+              "type": "concept",
+              "title": "HTTP状态码",
+              "content": "200：成功；301/302：重定向；404：未找到；403：禁止访问；500：服务器错误"
+            },
+            {
+              "type": "concept",
+              "title": "请求头重要字段",
+              "content": "User-Agent：浏览器标识；Referer：来源页；Cookie：会话信息；Accept：接受类型"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "第二章：requests库详解",
+      "duration": "1小时30分钟",
+      "lessons": [
+        {
+          "id": "2-1",
+          "title": "requests库安装与基础使用",
+          "duration": "20分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Python%20requests%20library%20code%20example%20terminal%20interface&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "安装requests",
+              "content": "pip install requests"
+            },
+            {
+              "type": "code",
+              "title": "发送GET请求",
+              "content": "import requests\nresponse = requests.get('https://www.runoob.com/')\nprint(response.text)"
+            },
+            {
+              "type": "reference",
+              "title": "Response对象常用属性",
+              "content": "status_code：状态码；text：响应内容；content：字节内容；headers：响应头；encoding：编码方式；cookies：Cookie信息"
+            }
+          ]
+        },
+        {
+          "id": "2-2",
+          "title": "GET与POST请求",
+          "duration": "25分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=GET%20POST%20HTTP%20methods%20comparison%20diagram&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "带参数的GET请求",
+              "content": "params = {'key1': 'value1', 'key2': 'value2'}\nresponse = requests.get(url, params=params)"
+            },
+            {
+              "type": "code",
+              "title": "发送POST请求",
+              "content": "data = {'username': 'test', 'password': '123456'}\nresponse = requests.post(url, data=data)"
+            },
+            {
+              "type": "concept",
+              "title": "GET与POST区别",
+              "content": "GET参数在URL中，长度受限，不安全；POST参数在请求体，长度不限，更安全"
+            }
+          ]
+        },
+        {
+          "id": "2-3",
+          "title": "请求头与高级用法",
+          "duration": "25分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=HTTP%20request%20headers%20configuration%20code%20editor&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "设置请求头",
+              "content": "headers = {\n    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/91.0.4472.124',\n    'Referer': 'https://www.example.com'\n}\nresponse = requests.get(url, headers=headers)"
+            },
+            {
+              "type": "code",
+              "title": "处理JSON响应",
+              "content": "response = requests.get(url)\ndata = response.json()\nprint(data)"
+            },
+            {
+              "type": "code",
+              "title": "设置超时时间",
+              "content": "response = requests.get(url, timeout=10)"
+            }
+          ]
+        },
+        {
+          "id": "2-4",
+          "title": "Cookie与Session",
+          "duration": "20分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Cookie%20Session%20authentication%20mechanism%20diagram&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "concept",
+              "title": "Cookie作用",
+              "content": "保存用户登录状态、偏好设置等信息，实现会话保持"
+            },
+            {
+              "type": "code",
+              "title": "携带Cookie请求",
+              "content": "cookies = {'session_id': 'abc123'}\nresponse = requests.get(url, cookies=cookies)"
+            },
+            {
+              "type": "code",
+              "title": "使用Session保持会话",
+              "content": "session = requests.Session()\nsession.post(login_url, data=login_data)\nresponse = session.get(protected_url)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "第三章：urllib库详解",
+      "duration": "1小时",
+      "lessons": [
+        {
+          "id": "3-1",
+          "title": "urllib.request模块",
+          "duration": "20分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Python%20urllib%20request%20module%20code%20example&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "基本用法",
+              "content": "from urllib.request import urlopen\nresponse = urlopen('https://www.runoob.com/')\nprint(response.read().decode('utf-8'))"
+            },
+            {
+              "type": "code",
+              "title": "设置超时",
+              "content": "response = urlopen(url, timeout=10)"
+            },
+            {
+              "type": "code",
+              "title": "获取状态码",
+              "content": "print(response.getcode())"
+            }
+          ]
+        },
+        {
+          "id": "3-2",
+          "title": "urllib.parse模块",
+          "duration": "20分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=URL%20parsing%20encoding%20decoding%20concept%20diagram&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "URL编码解码",
+              "content": "from urllib.parse import quote, unquote\nencoded = quote('中文')\nprint(encoded)\nprint(unquote(encoded))"
+            },
+            {
+              "type": "code",
+              "title": "解析URL",
+              "content": "from urllib.parse import urlparse\nresult = urlparse('https://www.runoob.com/?s=python')\nprint(result.scheme, result.netloc, result.query)"
+            },
+            {
+              "type": "code",
+              "title": "构造URL参数",
+              "content": "from urllib.parse import urlencode\nparams = {'key1': 'value1', 'key2': 'value2'}\nquery_string = urlencode(params)"
+            }
+          ]
+        },
+        {
+          "id": "3-3",
+          "title": "urllib.error模块",
+          "duration": "20分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Python%20exception%20handling%20error%20catching%20code&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "处理HTTPError",
+              "content": "from urllib.error import HTTPError, URLError\ntry:\n    response = urlopen(url)\nexcept HTTPError as e:\n    print(f'HTTP错误: {e.code}')\nexcept URLError as e:\n    print(f'URL错误: {e.reason}')"
+            },
+            {
+              "type": "concept",
+              "title": "异常类型",
+              "content": "URLError：通用URL错误；HTTPError：HTTP协议错误（包含状态码）"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "第四章：BeautifulSoup解析",
+      "duration": "1小时30分钟",
+      "lessons": [
+        {
+          "id": "4-1",
+          "title": "BeautifulSoup安装与基础",
+          "duration": "25分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=BeautifulSoup%20HTML%20parsing%20library%20logo%20code%20editor&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "安装命令",
+              "content": "pip install beautifulsoup4\npip install lxml"
+            },
+            {
+              "type": "code",
+              "title": "基本用法",
+              "content": "from bs4 import BeautifulSoup\nimport requests\n\nresponse = requests.get(url)\nsoup = BeautifulSoup(response.text, 'lxml')"
+            },
+            {
+              "type": "concept",
+              "title": "解析器对比",
+              "content": "html.parser：Python内置，速度一般；lxml：速度快，功能强；html5lib：容错性好"
+            }
+          ]
+        },
+        {
+          "id": "4-2",
+          "title": "查找标签与提取数据",
+          "duration": "30分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=HTML%20tag%20search%20find%20find_all%20methods%20diagram&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "find()方法",
+              "content": "# 查找第一个标签\ntitle_tag = soup.find('title')\nprint(title_tag.get_text())"
+            },
+            {
+              "type": "code",
+              "title": "find_all()方法",
+              "content": "# 查找所有标签\nlinks = soup.find_all('a')\nfor link in links:\n    print(link.get('href'), link.get_text())"
+            },
+            {
+              "type": "code",
+              "title": "按属性查找",
+              "content": "# 按class查找\ndivs = soup.find_all('div', class_='container')\n# 按id查找\nheader = soup.find('header', id='main-header')\n# 按属性查找\ninputs = soup.find_all('input', attrs={'type': 'text'})"
+            }
+          ]
+        },
+        {
+          "id": "4-3",
+          "title": "CSS选择器与高级用法",
+          "duration": "25分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=CSS%20selector%20BeautifulSoup%20select%20method%20example&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "CSS选择器",
+              "content": "# 类选择器\nelements = soup.select('.class-name')\n# ID选择器\nelement = soup.select('#unique-id')\n# 后代选择器\nlinks = soup.select('div.content a')\n# 属性选择器\ninputs = soup.select('input[type=\"text\"]')"
+            },
+            {
+              "type": "code",
+              "title": "遍历文档树",
+              "content": "# 获取父标签\nparent = tag.parent\n# 获取子标签\nfor child in tag.children:\n    print(child)\n# 获取兄弟标签\nnext_sibling = tag.next_sibling"
+            },
+            {
+              "type": "code",
+              "title": "获取文本与属性",
+              "content": "# 获取文本\ntext = tag.get_text()\n# 获取属性\nhref = tag.get('href')\n# 获取所有属性\nattrs = tag.attrs"
+            }
+          ]
+        },
+        {
+          "id": "4-4",
+          "title": "中文乱码处理",
+          "duration": "10分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Chinese%20encoding%20charset%20utf-8%20gbk%20problem%20solution&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "设置编码方式",
+              "content": "response = requests.get(url)\nresponse.encoding = 'utf-8'\n# 或自动检测\nimport chardet\nencoding = chardet.detect(response.content)['encoding']\nresponse.encoding = encoding"
+            },
+            {
+              "type": "note",
+              "title": "常见编码",
+              "content": "UTF-8：国际通用；GBK/GB2312：中文Windows常用；ISO-8859-1：拉丁字母"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "第五章：正则表达式",
+      "duration": "45分钟",
+      "lessons": [
+        {
+          "id": "5-1",
+          "title": "正则表达式基础",
+          "duration": "20分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=regular%20expression%20pattern%20matching%20cheat%20sheet&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "reference",
+              "title": "常用元字符",
+              "content": ". 匹配任意字符；\\\\d 数字；\\\\w 字母数字下划线；\\\\s 空白字符；^ 开头；$ 结尾；* 0或多个；+ 1或多个；? 0或1个"
+            },
+            {
+              "type": "code",
+              "title": "re模块基本用法",
+              "content": "import re\n\npattern = r'\\\\d+'\ntext = '价格：100元'\nresult = re.findall(pattern, text)\nprint(result)"
+            }
+          ]
+        },
+        {
+          "id": "5-2",
+          "title": "正则表达式实战",
+          "duration": "25分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=regex%20practical%20example%20email%20phone%20extraction&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "提取邮箱",
+              "content": "pattern = r'[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\\\.[a-zA-Z]{2,}'\nemails = re.findall(pattern, text)"
+            },
+            {
+              "type": "code",
+              "title": "提取URL",
+              "content": "pattern = r'https?://[^\\\\s]+'\nurls = re.findall(pattern, text)"
+            },
+            {
+              "type": "code",
+              "title": "分组匹配",
+              "content": "pattern = r'(\\\\d{4})-(\\\\d{2})-(\\\\d{2})'\nmatch = re.search(pattern, '日期：2024-01-15')\nprint(match.group(1), match.group(2), match.group(3))"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "第六章：实战项目",
+      "duration": "1小时30分钟",
+      "lessons": [
+        {
+          "id": "6-1",
+          "title": "项目一：爬取新闻网站",
+          "duration": "30分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=web%20scraping%20news%20website%20project%20code%20screenshot&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "爬取新闻列表",
+              "content": "import requests\nfrom bs4 import BeautifulSoup\n\nurl = 'https://news.example.com'\nresponse = requests.get(url)\nsoup = BeautifulSoup(response.text, 'lxml')\n\nnews_list = soup.find_all('div', class_='news-item')\nfor news in news_list:\n    title = news.find('h3').get_text()\n    link = news.find('a')['href']\n    print(f'{title}: {link}')"
+            },
+            {
+              "type": "concept",
+              "title": "项目要点",
+              "content": "分析页面结构、提取标题和链接、处理分页、保存到文件"
+            }
+          ]
+        },
+        {
+          "id": "6-2",
+          "title": "项目二：爬取图片网站",
+          "duration": "30分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=image%20download%20scraping%20project%20with%20images%20gallery&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "下载图片",
+              "content": "import requests\nimport os\n\nurl = 'https://example.com/image.jpg'\nresponse = requests.get(url)\n\nos.makedirs('images', exist_ok=True)\nwith open('images/image.jpg', 'wb') as f:\n    f.write(response.content)"
+            },
+            {
+              "type": "concept",
+              "title": "项目要点",
+              "content": "提取img标签src属性、处理图片懒加载、设置请求头、控制下载速度"
+            }
+          ]
+        },
+        {
+          "id": "6-3",
+          "title": "项目三：数据存储与分析",
+          "duration": "30分钟",
+          "video": "https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=data%20storage%20CSV%20JSON%20database%20visualization&image_size=landscape_16_9",
+          "knowledge": [
+            {
+              "type": "code",
+              "title": "保存到CSV",
+              "content": "import csv\n\nwith open('data.csv', 'w', newline='', encoding='utf-8') as f:\n    writer = csv.writer(f)\n    writer.writerow(['标题', '链接', '日期'])\n    for item in data_list:\n        writer.writerow([item['title'], item['link'], item['date']])"
+            },
+            {
+              "type": "code",
+              "title": "保存到JSON",
+              "content": "import json\n\nwith open('data.json', 'w', encoding='utf-8') as f:\n    json.dump(data_list, f, ensure_ascii=False, indent=2)"
+            },
+            {
+              "type": "concept",
+              "title": "数据存储方案",
+              "content": "CSV：表格数据；JSON：结构化数据；SQLite：轻量级数据库；MongoDB：文档型数据库"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "knowledge_points": [
+    {
+      "id": "kp-1",
+      "title": "爬虫流程总结",
+      "type": "summary",
+      "content": "1.分析目标网站结构；2.发送HTTP请求获取页面；3.解析HTML提取数据；4.存储数据；5.处理反爬机制"
+    },
+    {
+      "id": "kp-2",
+      "title": "反爬策略应对",
+      "type": "tip",
+      "content": "设置请求头、使用代理IP、控制请求频率、处理验证码、使用Cookie保持会话"
+    },
+    {
+      "id": "kp-3",
+      "title": "常用工具对比",
+      "type": "comparison",
+      "content": "requests：简单易用；urllib：Python内置；BeautifulSoup：HTML解析；Scrapy：高级框架；Selenium：动态页面"
+    }
+  ]
+}

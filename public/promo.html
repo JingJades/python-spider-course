@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Python爬虫入门到实战 - 新手引导课程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0f0f0f;
+            color: #fff;
+            overflow-x: hidden;
+        }
+        .hero-section {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #00a1d6 0%, #00c3ff 50%, #5856d6 100%);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background: url('https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=abstract%20digital%20code%20matrix%20background%20blue%20purple%20gradient&image_size=landscape_16_9');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            padding: 40px;
+            max-width: 1200px;
+        }
+        .hero-title {
+            font-size: 56px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #fff, #a0aec0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: fadeInUp 1s ease-out;
+        }
+        .hero-subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            animation: fadeInUp 1s ease-out 0.2s both;
+        }
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 60px;
+            margin-bottom: 50px;
+            animation: fadeInUp 1s ease-out 0.4s both;
+        }
+        .stat-item {
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #fff;
+        }
+        .stat-label {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-top: 8px;
+        }
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+        }
+        .btn {
+            padding: 16px 40px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #ff6b35;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #ff8552;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255, 107, 53, 0.4);
+        }
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+        }
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+        }
+        .scroll-indicator svg {
+            width: 32px;
+            height: 32px;
+            fill: rgba(255, 255, 255, 0.8);
+        }
+        .video-section {
+            padding: 80px 20px;
+            background: #1a1a1a;
+        }
+        .section-title {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 60px;
+            color: #fff;
+        }
+        .section-title span {
+            background: linear-gradient(90deg, #00a1d6, #5856d6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .video-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #0f0f0f;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+        .video-player {
+            aspect-ratio: 16/9;
+            position: relative;
+            overflow: hidden;
+        }
+        .video-player img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .video-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        .play-button {
+            width: 100px;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s;
+        }
+        .play-button:hover {
+            transform: scale(1.1);
+        }
+        .play-button svg {
+            width: 40px;
+            height: 40px;
+            fill: #00a1d6;
+            margin-left: 8px;
+        }
+        .video-controls {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00a1d6, #5856d6);
+            width: 0%;
+            transition: width 0.3s;
+        }
+        .time-display {
+            color: #999;
+            font-size: 14px;
+            min-width: 100px;
+        }
+        .feature-section {
+            padding: 80px 20px;
+            background: #0f0f0f;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .feature-card {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 161, 214, 0.2);
+        }
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #00a1d6, #5856d6);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 36px;
+        }
+        .feature-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 15px;
+        }
+        .feature-description {
+            font-size: 15px;
+            color: #999;
+            line-height: 1.6;
+        }
+        .curriculum-section {
+            padding: 80px 20px;
+            background: #1a1a1a;
+        }
+        .curriculum-timeline {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+        }
+        .curriculum-timeline::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(180deg, #00a1d6, #5856d6);
+            transform: translateX(-50%);
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 50px;
+            display: flex;
+        }
+        .timeline-item:nth-child(odd) {
+            justify-content: flex-start;
+        }
+        .timeline-item:nth-child(even) {
+            justify-content: flex-end;
+        }
+        .timeline-content {
+            width: 45%;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .timeline-number {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #00a1d6, #5856d6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            color: #fff;
+            z-index: 1;
+        }
+        .timeline-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        .timeline-duration {
+            font-size: 14px;
+            color: #00c3ff;
+            margin-bottom: 15px;
+        }
+        .timeline-lessons {
+            font-size: 14px;
+            color: #999;
+        }
+        .review-section {
+            padding: 80px 20px;
+            background: #0f0f0f;
+        }
+        .reviews-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .review-card {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .review-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .reviewer-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #00a1d6, #5856d6);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .reviewer-info {
+            flex: 1;
+        }
+        .reviewer-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+        }
+        .reviewer-role {
+            font-size: 13px;
+            color: #999;
+        }
+        .review-stars {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        .star {
+            width: 18px;
+            height: 18px;
+            fill: #ffd700;
+        }
+        .review-content {
+            font-size: 15px;
+            color: #999;
+            line-height: 1.6;
+        }
+        .cta-section {
+            padding: 80px 20px;
+            background: linear-gradient(135deg, #00a1d6 0%, #5856d6 100%);
+            text-align: center;
+        }
+        .cta-title {
+            font-size: 40px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 20px;
+        }
+        .cta-description {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+        }
+        .footer {
+            background: #1a1a1a;
+            padding: 40px 20px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+        .footer-links a {
+            color: #999;
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+        .footer-links a:hover {
+            color: #00c3ff;
+        }
+        .footer-copyright {
+            color: #666;
+            font-size: 14px;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+            .hero-subtitle {
+                font-size: 18px;
+            }
+            .hero-stats {
+                gap: 30px;
+            }
+            .stat-number {
+                font-size: 32px;
+            }
+            .curriculum-timeline::before {
+                left: 30px;
+            }
+            .timeline-item {
+                justify-content: flex-end !important;
+            }
+            .timeline-content {
+                width: calc(100% - 80px);
+                margin-left: 80px;
+            }
+            .timeline-number {
+                left: 30px;
+            }
+            .btn {
+                padding: 14px 28px;
+                font-size: 16px;
+            }
+        }
+        .video-animation {
+            position: absolute;
+            inset: 0;
+            display: none;
+        }
+        .video-animation.active {
+            display: block;
+        }
+        .animate-screen {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 80%;
+            height: 80%;
+            background: #1a1a1a;
+            border-radius: 12px;
+            border: 2px solid #333;
+            overflow: hidden;
+        }
+        .animate-browser-bar {
+            height: 30px;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            gap: 8px;
+        }
+        .browser-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27ca40; }
+        .animate-content {
+            padding: 20px;
+            height: calc(100% - 30px);
+            overflow-y: auto;
+        }
+        .animate-line {
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+            color: #34d399;
+            margin-bottom: 8px;
+            opacity: 0;
+            animation: typeIn 0.5s ease-out forwards;
+        }
+        @keyframes typeIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        .animate-line:nth-child(1) { animation-delay: 0.5s; }
+        .animate-line:nth-child(2) { animation-delay: 1s; }
+        .animate-line:nth-child(3) { animation-delay: 1.5s; }
+        .animate-line:nth-child(4) { animation-delay: 2s; }
+        .animate-line:nth-child(5) { animation-delay: 2.5s; }
+        .animate-line:nth-child(6) { animation-delay: 3s; }
+        .animate-line:nth-child(7) { animation-delay: 3.5s; }
+        .animate-line:nth-child(8) { animation-delay: 4s; }
+        .terminal-cursor {
+            display: inline-block;
+            width: 8px;
+            height: 16px;
+            background: #34d399;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        .progress-animation {
+            animation: progressMove 5s linear infinite;
+        }
+        @keyframes progressMove {
+            from { width: 0%; }
+            to { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="hero-section">
+        <div class="hero-bg"></div>
+        <div class="hero-content">
+            <h1 class="hero-title">Python爬虫入门到实战</h1>
+            <p class="hero-subtitle">专为大学生设计的爬虫新手引导课程</p>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <div class="stat-number">12.5K</div>
+                    <div class="stat-label">学员已学习</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">6.5小时</div>
+                    <div class="stat-label">课程时长</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24节</div>
+                    <div class="stat-label">精品课程</div>
+                </div>
+            </div>
+            <div class="hero-buttons">
+                <a href="spider-course.html" class="btn btn-primary">立即开始学习</a>
+                <a href="#video" class="btn btn-secondary">观看宣传视频</a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <svg viewBox="0 0 24 24"><path d="M7 14l5-5 5 5H7z"/></svg>
+        </div>
+    </div>
+
+    <div class="video-section" id="video">
+        <h2 class="section-title">🎬 <span>课程宣传视频</span></h2>
+        <div class="video-container">
+            <div class="video-player" onclick="toggleVideo()">
+                <img src="https://trae-api-cn.mchost.guru/api/ide/v1/text_to_image?prompt=Python%20web%20scraping%20course%20promo%20video%20thumbnail%20with%20code%20and%20data%20visualization&image_size=landscape_16_9" alt="课程宣传视频">
+                <div class="video-overlay" id="videoOverlay">
+                    <div class="play-button">
+                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    </div>
+                </div>
+                <div class="video-animation" id="videoAnimation">
+                    <div class="animate-screen">
+                        <div class="animate-browser-bar">
+                            <div class="browser-dot dot-red"></div>
+                            <div class="browser-dot dot-yellow"></div>
+                            <div class="browser-dot dot-green"></div>
+                        </div>
+                        <div class="animate-content">
+                            <div class="animate-line">>>> import requests</div>
+                            <div class="animate-line">>>> from bs4 import BeautifulSoup</div>
+                            <div class="animate-line">>>> url = 'https://example.com'</div>
+                            <div class="animate-line">>>> response = requests.get(url)</div>
+                            <div class="animate-line">>>> soup = BeautifulSoup(response.text, 'lxml')</div>
+                            <div class="animate-line">>>> title = soup.find('title').get_text()</div>
+                            <div class="animate-line">>>> print(f'网页标题: {title}')</div>
+                            <div class="animate-line">网页标题: Python爬虫入门教程<span class="terminal-cursor"></span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="video-controls">
+                <div class="control-btn" style="width: 40px; height: 40px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="toggleVideo()">
+                    <svg id="playIcon" width="20" height="20" viewBox="0 0 24 24" fill="#fff"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <div class="progress-bar" onclick="seekVideo(event)">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div class="time-display" id="timeDisplay">00:00 / 00:05</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="feature-section">
+        <h2 class="section-title">✨ <span>课程特色</span></h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🐍</div>
+                <h3 class="feature-title">零基础入门</h3>
+                <p class="feature-description">从Python基础开始，循序渐进，即使没有编程经验也能轻松上手，让你快速掌握爬虫技能。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3 class="feature-title">系统化学习</h3>
+                <p class="feature-description">6大章节，24节精品课程，覆盖爬虫完整知识体系，从理论到实战全面掌握。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💻</div>
+                <h3 class="feature-title">实战驱动</h3>
+                <p class="feature-description">包含新闻爬取、图片下载、数据存储等实战项目，边学边练，学以致用。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🔧</div>
+                <h3 class="feature-title">工具详解</h3>
+                <p class="feature-description">深入讲解requests、BeautifulSoup、urllib等常用爬虫工具，掌握核心技术。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3 class="feature-title">反爬策略</h3>
+                <p class="feature-description">学习应对网站反爬机制，掌握请求头、代理IP、Cookie等实用技巧。</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3 class="feature-title">就业导向</h3>
+                <p class="feature-description">课程内容贴合企业需求，帮助你在数据分析、爬虫开发等岗位中脱颖而出。</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="curriculum-section">
+        <h2 class="section-title">📖 <span>课程大纲</span></h2>
+        <div class="curriculum-timeline">
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="timeline-title">第一章：爬虫基础概念</h3>
+                    <div class="timeline-duration">45分钟 · 3节课</div>
+                    <p class="timeline-lessons">了解爬虫定义、Python爬虫架构、HTTP协议基础</p>
+                </div>
+                <div class="timeline-number">1</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="timeline-title">第二章：requests库详解</h3>
+                    <div class="timeline-duration">1小时30分钟 · 4节课</div>
+                    <p class="timeline-lessons">GET/POST请求、请求头设置、Cookie与Session管理</p>
+                </div>
+                <div class="timeline-number">2</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="timeline-title">第三章：urllib库详解</h3>
+                    <div class="timeline-duration">1小时 · 3节课</div>
+                    <p class="timeline-lessons">request模块、parse模块、error异常处理</p>
+                </div>
+                <div class="timeline-number">3</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="timeline-title">第四章：BeautifulSoup解析</h3>
+                    <div class="timeline-duration">1小时30分钟 · 4节课</div>
+                    <p class="timeline-lessons">HTML解析、CSS选择器、中文乱码处理</p>
+                </div>
+                <div class="timeline-number">4</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="timeline-title">第五章：正则表达式</h3>
+                    <div class="timeline-duration">45分钟 · 2节课</div>
+                    <p class="timeline-lessons">正则基础、实战应用、邮箱URL提取</p>
+                </div>
+                <div class="timeline-number">5</div>
+            </div>
+            <div class="timeline-item">
+                <div class="timeline-content">
+                    <h3 class="timeline-title">第六章：实战项目</h3>
+                    <div class="timeline-duration">1小时30分钟 · 3节课</div>
+                    <p class="timeline-lessons">新闻网站爬取、图片下载、数据存储分析</p>
+                </div>
+                <div class="timeline-number">6</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="review-section">
+        <h2 class="section-title">🌟 <span>学员评价</span></h2>
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">👨‍🎓</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">张三</div>
+                        <div class="reviewer-role">计算机专业大三学生</div>
+                    </div>
+                </div>
+                <div class="review-stars">
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+                <p class="review-content">课程内容非常全面，从基础到实战循序渐进。老师讲解清晰，代码示例丰富，让我这个新手也能快速上手爬虫。强烈推荐给想学爬虫的同学！</p>
+            </div>
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">👩‍💻</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">李四</div>
+                        <div class="reviewer-role">数据分析师</div>
+                    </div>
+                </div>
+                <div class="review-stars">
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+                <p class="review-content">作为数据分析师，爬虫技能是必备的。这门课程帮我系统地掌握了爬虫技术，现在工作中经常用到，大大提高了数据采集效率。</p>
+            </div>
+            <div class="review-card">
+                <div class="review-header">
+                    <div class="reviewer-avatar">🧑‍🎓</div>
+                    <div class="reviewer-info">
+                        <div class="reviewer-name">王五</div>
+                        <div class="reviewer-role">统计学研究生</div>
+                    </div>
+                </div>
+                <div class="review-stars">
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    <svg class="star" viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+                <p class="review-content">课程的实战项目非常实用，学完后我成功爬取了多个网站的数据用于论文研究。课程结构清晰，知识点讲解到位，值得推荐！</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="cta-section">
+        <h2 class="cta-title">开启你的爬虫学习之旅</h2>
+        <p class="cta-description">加入12,500+学员的行列，系统学习Python爬虫，掌握数据采集技能</p>
+        <div class="hero-buttons">
+            <a href="spider-course.html" class="btn btn-primary">免费开始学习</a>
+            <a href="#video" class="btn btn-secondary">观看课程介绍</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-links">
+            <a href="#">关于我们</a>
+            <a href="#">帮助中心</a>
+            <a href="#">用户协议</a>
+            <a href="#">隐私政策</a>
+        </div>
+        <div class="footer-copyright">© 2024 Python爬虫入门课程. All rights reserved.</div>
+    </div>
+
+    <script>
+        let isPlaying = false;
+        let progressInterval = null;
+
+        function toggleVideo() {
+            const videoOverlay = document.getElementById('videoOverlay');
+            const videoAnimation = document.getElementById('videoAnimation');
+            const playIcon = document.getElementById('playIcon');
+            const progressFill = document.getElementById('progressFill');
+
+            if (isPlaying) {
+                videoOverlay.style.display = 'flex';
+                videoAnimation.classList.remove('active');
+                playIcon.innerHTML = '<path d="M8 5v14l11-7z"/>';
+                progressFill.classList.remove('progress-animation');
+                progressFill.style.width = '0%';
+                clearInterval(progressInterval);
+            } else {
+                videoOverlay.style.display = 'none';
+                videoAnimation.classList.add('active');
+                playIcon.innerHTML = '<path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>';
+                progressFill.classList.add('progress-animation');
+                
+                progressInterval = setInterval(() => {
+                    const width = parseFloat(progressFill.style.width || '0');
+                    if (width >= 100) {
+                        toggleVideo();
+                    }
+                }, 50);
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function seekVideo(e) {
+            const progressBar = e.currentTarget;
+            const rect = progressBar.getBoundingClientRect();
+            const percent = (e.clientX - rect.left) / rect.width;
+            const progressFill = document.getElementById('progressFill');
+            progressFill.style.width = `${Math.min(100, Math.max(0, percent * 100))}%`;
+        }
+    </script>
+</body>
+</html>
