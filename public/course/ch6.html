@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第六章：实战项目 - Python爬虫入门到实战</title>
+<style>
+:root{--bg:#0f0f0f;--bg2:#1a1a1a;--card:#1a1a2e;--card2:#16213e;--line:rgba(255,255,255,.08);
+--txt:#e8e8e8;--muted:#9aa0a6;--c1:#00a1d6;--c2:#5856d6;--accent:#00c3ff;--orange:#ff6b35}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+background:var(--bg);color:var(--txt);line-height:1.8}
+a{color:var(--accent);text-decoration:none}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:280px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--line);
+padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .brand{font-size:18px;font-weight:700;margin-bottom:6px;
+background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;
+-webkit-text-fill-color:transparent}
+.sidebar .brand-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.sidebar nav a{display:block;padding:9px 14px;border-radius:10px;color:var(--txt);font-size:14px;margin-bottom:4px;transition:.2s}
+.sidebar nav a:hover{background:rgba(255,255,255,.06)}
+.sidebar nav a.active{background:linear-gradient(90deg,rgba(0,161,214,.25),rgba(88,86,214,.25));color:#fff;font-weight:600}
+.sidebar nav a .num{display:inline-block;width:22px;color:var(--accent);font-weight:700}
+.main{flex:1;min-width:0;padding:48px 56px;max-width:980px}
+.content h1{font-size:30px;margin:0 0 24px;padding-bottom:16px;border-bottom:1px solid var(--line);
+background:linear-gradient(90deg,#fff,#a0aec0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.content h2{font-size:23px;margin:40px 0 16px;color:#fff;padding-left:12px;border-left:4px solid var(--c1)}
+.content h3{font-size:18px;margin:28px 0 12px;color:var(--accent)}
+.content p{margin:12px 0}
+.content ul,.content ol{margin:12px 0 12px 24px}
+.content li{margin:6px 0}
+.content strong{color:#fff}
+.content blockquote{margin:16px 0;padding:14px 18px;background:linear-gradient(135deg,var(--card),var(--card2));
+border-left:4px solid var(--c2);border-radius:0 12px 12px 0;color:var(--muted)}
+.content table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;display:block;overflow-x:auto}
+.content th,.content td{border:1px solid var(--line);padding:9px 14px;text-align:left;white-space:nowrap}
+.content th{background:linear-gradient(90deg,rgba(0,161,214,.2),rgba(88,86,214,.2));color:#fff}
+.content tr:nth-child(even){background:rgba(255,255,255,.02)}
+.content code{font-family:'JetBrains Mono',Consolas,Monaco,monospace;font-size:.92em;
+background:rgba(0,161,214,.12);color:#7dd3fc;padding:2px 7px;border-radius:6px}
+.content pre{margin:16px 0;border-radius:14px;overflow-x:auto;border:1px solid var(--line)}
+.content pre code{display:block;padding:18px 20px;background:#0d1117;color:#e6edf3;font-size:13.5px;line-height:1.7}
+.codehilite{background:#0d1117;border-radius:14px}
+.codehilite pre{margin:0;border:none}
+.pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+.pager a{flex:1;max-width:48%;padding:14px 20px;background:linear-gradient(135deg,var(--card),var(--card2));
+border:1px solid var(--line);border-radius:14px;color:var(--txt);transition:.25s}
+.pager a:hover{border-color:var(--c1);transform:translateY(-2px)}
+.pager .dir{font-size:12px;color:var(--muted);display:block}
+.pager .next{text-align:right;margin-left:auto}
+.toc-inline{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--line);
+border-radius:14px;padding:18px 22px;margin:20px 0 28px;font-size:14px}
+.toc-inline b{color:#fff}
+.toc-inline a{margin-right:16px;white-space:nowrap}
+.hero{background:linear-gradient(135deg,var(--c1) 0%,#00c3ff 50%,var(--c2) 100%);border-radius:20px;
+padding:40px 36px;margin-bottom:28px}
+.hero h1{-webkit-text-fill-color:#fff !important;border:none;padding:0;margin:0 0 10px !important;font-size:32px !important}
+.hero p{color:rgba(255,255,255,.92);margin:0}
+.menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:99;background:var(--card);color:#fff;
+border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:15px;cursor:pointer}
+@media(max-width:900px){
+.sidebar{position:fixed;left:-300px;transition:.3s;z-index:98;height:100vh}
+.sidebar.open{left:0}
+.main{padding:64px 22px}
+.menu-btn{display:block}}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #49483e }
+.codehilite { background: #272822; color: #F8F8F2 }
+.codehilite .c { color: #959077 } /* Comment */
+.codehilite .err { color: #ED007E; background-color: #1E0010 } /* Error */
+.codehilite .esc { color: #F8F8F2 } /* Escape */
+.codehilite .g { color: #F8F8F2 } /* Generic */
+.codehilite .k { color: #66D9EF } /* Keyword */
+.codehilite .l { color: #AE81FF } /* Literal */
+.codehilite .n { color: #F8F8F2 } /* Name */
+.codehilite .o { color: #FF4689 } /* Operator */
+.codehilite .x { color: #F8F8F2 } /* Other */
+.codehilite .p { color: #F8F8F2 } /* Punctuation */
+.codehilite .ch { color: #959077 } /* Comment.Hashbang */
+.codehilite .cm { color: #959077 } /* Comment.Multiline */
+.codehilite .cp { color: #959077 } /* Comment.Preproc */
+.codehilite .cpf { color: #959077 } /* Comment.PreprocFile */
+.codehilite .c1 { color: #959077 } /* Comment.Single */
+.codehilite .cs { color: #959077 } /* Comment.Special */
+.codehilite .gd { color: #FF4689 } /* Generic.Deleted */
+.codehilite .ge { color: #F8F8F2; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #F8F8F2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #F8F8F2 } /* Generic.Error */
+.codehilite .gh { color: #F8F8F2 } /* Generic.Heading */
+.codehilite .gi { color: #A6E22E } /* Generic.Inserted */
+.codehilite .go { color: #66D9EF } /* Generic.Output */
+.codehilite .gp { color: #FF4689; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { color: #F8F8F2; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #959077 } /* Generic.Subheading */
+.codehilite .gt { color: #F8F8F2 } /* Generic.Traceback */
+.codehilite .kc { color: #66D9EF } /* Keyword.Constant */
+.codehilite .kd { color: #66D9EF } /* Keyword.Declaration */
+.codehilite .kn { color: #FF4689 } /* Keyword.Namespace */
+.codehilite .kp { color: #66D9EF } /* Keyword.Pseudo */
+.codehilite .kr { color: #66D9EF } /* Keyword.Reserved */
+.codehilite .kt { color: #66D9EF } /* Keyword.Type */
+.codehilite .ld { color: #E6DB74 } /* Literal.Date */
+.codehilite .m { color: #AE81FF } /* Literal.Number */
+.codehilite .s { color: #E6DB74 } /* Literal.String */
+.codehilite .na { color: #A6E22E } /* Name.Attribute */
+.codehilite .nb { color: #F8F8F2 } /* Name.Builtin */
+.codehilite .nc { color: #A6E22E } /* Name.Class */
+.codehilite .no { color: #66D9EF } /* Name.Constant */
+.codehilite .nd { color: #A6E22E } /* Name.Decorator */
+.codehilite .ni { color: #F8F8F2 } /* Name.Entity */
+.codehilite .ne { color: #A6E22E } /* Name.Exception */
+.codehilite .nf { color: #A6E22E } /* Name.Function */
+.codehilite .nl { color: #F8F8F2 } /* Name.Label */
+.codehilite .nn { color: #F8F8F2 } /* Name.Namespace */
+.codehilite .nx { color: #A6E22E } /* Name.Other */
+.codehilite .py { color: #F8F8F2 } /* Name.Property */
+.codehilite .nt { color: #FF4689 } /* Name.Tag */
+.codehilite .nv { color: #F8F8F2 } /* Name.Variable */
+.codehilite .ow { color: #FF4689 } /* Operator.Word */
+.codehilite .pm { color: #F8F8F2 } /* Punctuation.Marker */
+.codehilite .w { color: #F8F8F2 } /* Text.Whitespace */
+.codehilite .mb { color: #AE81FF } /* Literal.Number.Bin */
+.codehilite .mf { color: #AE81FF } /* Literal.Number.Float */
+.codehilite .mh { color: #AE81FF } /* Literal.Number.Hex */
+.codehilite .mi { color: #AE81FF } /* Literal.Number.Integer */
+.codehilite .mo { color: #AE81FF } /* Literal.Number.Oct */
+.codehilite .sa { color: #E6DB74 } /* Literal.String.Affix */
+.codehilite .sb { color: #E6DB74 } /* Literal.String.Backtick */
+.codehilite .sc { color: #E6DB74 } /* Literal.String.Char */
+.codehilite .dl { color: #E6DB74 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #E6DB74 } /* Literal.String.Doc */
+.codehilite .s2 { color: #E6DB74 } /* Literal.String.Double */
+.codehilite .se { color: #AE81FF } /* Literal.String.Escape */
+.codehilite .sh { color: #E6DB74 } /* Literal.String.Heredoc */
+.codehilite .si { color: #E6DB74 } /* Literal.String.Interpol */
+.codehilite .sx { color: #E6DB74 } /* Literal.String.Other */
+.codehilite .sr { color: #E6DB74 } /* Literal.String.Regex */
+.codehilite .s1 { color: #E6DB74 } /* Literal.String.Single */
+.codehilite .ss { color: #E6DB74 } /* Literal.String.Symbol */
+.codehilite .bp { color: #F8F8F2 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #A6E22E } /* Name.Function.Magic */
+.codehilite .vc { color: #F8F8F2 } /* Name.Variable.Class */
+.codehilite .vg { color: #F8F8F2 } /* Name.Variable.Global */
+.codehilite .vi { color: #F8F8F2 } /* Name.Variable.Instance */
+.codehilite .vm { color: #F8F8F2 } /* Name.Variable.Magic */
+.codehilite .il { color: #AE81FF } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ 目录</button>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">Python爬虫入门到实战</div>
+  <div class="brand-sub">新手引导课程 · 完整讲义</div>
+  <nav><a href="index.html" class="">课程导读</a><a href="prep.html" class="">课前准备</a><a href="ch1.html" class="">第一章：爬虫基础概念</a><a href="ch2.html" class="">第二章：requests库详解</a><a href="ch3.html" class="">第三章：urllib库详解</a><a href="ch4.html" class="">第四章：BeautifulSoup解析</a><a href="ch5.html" class="">第五章：正则表达式</a><a href="ch6.html" class="active">第六章：实战项目</a><a href="appendix.html" class="">总结与FAQ</a></nav>
+</aside>
+<main class="main">
+  <div class="content"><h1 id="130-3">第六章：实战项目（1小时30分钟 · 3节课）</h1><div class="toc-inline"><b>本章节目录：</b><br><a href="#17">第17课：实战一——新闻网站爬取与多页采集</a><a href="#18">第18课：实战二——批量图片下载器</a><a href="#19">第19课：实战三——数据存储与分析入门</a></div>
+<p><strong>本章目标</strong>：把前五章的所有技能串成三个完整项目。每个项目都是可以直接运行、稍作修改就能用于真实场景的模板。</p>
+<hr />
+<h2 id="17">第17课：实战一——新闻网站爬取与多页采集</h2>
+<h3 id="171">17.1 项目需求分析</h3>
+<p><strong>目标</strong>：抓取某新闻网站列表页的新闻标题、链接、发布时间，并自动翻页抓取多页。</p>
+<p><strong>开发前必做的三件事</strong>（真实项目的标准流程）：</p>
+<ol>
+<li>打开目标网站，按 F12 观察：请求是 GET 还是 POST？参数怎么翻页？</li>
+<li>右键一条新闻标题 → 检查，确定标题、时间对应的 HTML 结构和 class 名；</li>
+<li>检查 robots 协议（网址后加 <code>/robots.txt</code>）与网站使用条款，确认允许抓取，并规划好请求间隔。</li>
+</ol>
+<h3 id="172">17.2 完整代码</h3>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">项目一：新闻网站多页爬取</span>
+<span class="sd">功能：抓取新闻标题、链接、发布时间，支持多页翻页</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bs4</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse</span>
+
+<span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) &#39;</span>
+                  <span class="s1">&#39;AppleWebKit/537.36 (KHTML, like Gecko) &#39;</span>
+                  <span class="s1">&#39;Chrome/120.0.0.0 Safari/537.36&#39;</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch_page</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;下载一个页面，返回 BeautifulSoup 对象&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">apparent_encoding</span>   <span class="c1"># 防中文乱码</span>
+        <span class="k">return</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  页面抓取失败 </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">parse_news</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="n">base_url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;解析一个页面中的所有新闻&quot;&quot;&quot;</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># ⚠️ 以下选择器是示例，实战中要用 F12 确认目标网站的真实结构</span>
+    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="s1">&#39;.news-item&#39;</span><span class="p">):</span>
+        <span class="n">title_tag</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s1">&#39;a.title&#39;</span><span class="p">)</span>
+        <span class="n">time_tag</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">select_one</span><span class="p">(</span><span class="s1">&#39;span.time&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">title_tag</span><span class="p">:</span>
+            <span class="n">results</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="n">title_tag</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>
+                <span class="s1">&#39;link&#39;</span><span class="p">:</span> <span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">title_tag</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;href&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)),</span>
+                <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="n">time_tag</span><span class="o">.</span><span class="n">get_text</span><span class="p">(</span><span class="n">strip</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span> <span class="k">if</span> <span class="n">time_tag</span> <span class="k">else</span> <span class="s1">&#39;&#39;</span>
+            <span class="p">})</span>
+    <span class="k">return</span> <span class="n">results</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">crawl_news</span><span class="p">(</span><span class="n">base_url</span><span class="p">,</span> <span class="n">max_page</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;主流程：循环翻页抓取&quot;&quot;&quot;</span>
+    <span class="n">all_news</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">page</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">max_page</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="c1"># 假设翻页规则是 ?page=N，实战中按 F12 观察到的真实规则修改</span>
+        <span class="n">url</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">base_url</span><span class="si">}</span><span class="s1">?page=</span><span class="si">{</span><span class="n">page</span><span class="si">}</span><span class="s1">&#39;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;正在抓取第 </span><span class="si">{</span><span class="n">page</span><span class="si">}</span><span class="s1"> 页: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">soup</span> <span class="o">=</span> <span class="n">fetch_page</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">soup</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">news</span> <span class="o">=</span> <span class="n">parse_news</span><span class="p">(</span><span class="n">soup</span><span class="p">,</span> <span class="n">url</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  本页抓到 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">news</span><span class="p">)</span><span class="si">}</span><span class="s1"> 条新闻&#39;</span><span class="p">)</span>
+        <span class="n">all_news</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">news</span><span class="p">)</span>
+
+        <span class="c1"># 如果一页都抓不到，可能翻页到底了，提前结束</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">news</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;  没有更多内容，停止翻页&#39;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">1.5</span><span class="p">)</span>   <span class="c1"># 🕷️ 爬虫礼仪：每次请求间隔1.5秒</span>
+    <span class="k">return</span> <span class="n">all_news</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">save_to_csv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;新闻数据.csv&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;保存为 CSV（utf-8-sig 保证 Excel 打开不乱码）&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;没有数据可保存&#39;</span><span class="p">)</span>
+        <span class="k">return</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">])</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;已保存 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s1"> 条数据到 </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">BASE_URL</span> <span class="o">=</span> <span class="s1">&#39;https://example.com/news&#39;</span>   <span class="c1"># 换成你的目标网站</span>
+    <span class="n">news_list</span> <span class="o">=</span> <span class="n">crawl_news</span><span class="p">(</span><span class="n">BASE_URL</span><span class="p">,</span> <span class="n">max_page</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">save_to_csv</span><span class="p">(</span><span class="n">news_list</span><span class="p">)</span>
+
+    <span class="c1"># 打印前5条预览</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">news_list</span><span class="p">[:</span><span class="mi">5</span><span class="p">],</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">. [</span><span class="si">{</span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">] </span><span class="si">{</span><span class="n">n</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="173">17.3 代码结构解读</h3>
+<p>这个项目的函数划分是爬虫项目的<strong>标准套路</strong>，以后写任何爬虫都可以套这个骨架：</p>
+<div class="codehilite"><pre><span></span><code>fetch_page()   负责「下载」——只管把网页拿回来
+parse_news()   负责「解析」——只管从 HTML 提取数据
+crawl_news()   负责「调度」——翻页循环、间隔控制、终止判断
+save_to_csv()  负责「存储」——数据落地
+</code></pre></div>
+
+<p>每个函数只干一件事，哪个环节出问题就调哪个，排查效率极高。</p>
+<h3 id="_1">📝 本课练习</h3>
+<ol>
+<li>把项目改造成抓取「商品列表」（字段：商品名、价格、链接），并保存为 CSV。</li>
+<li>增加断点续传功能：程序中断后重新运行时，跳过已抓取的页面（提示：用文件记录已完成的页码）。</li>
+<li>增加去重逻辑：同一条新闻（按链接判断）不重复保存。</li>
+</ol>
+<hr />
+<h2 id="18">第18课：实战二——批量图片下载器</h2>
+<h3 id="181">18.1 项目需求分析</h3>
+<p><strong>目标</strong>：输入一个网页地址，自动找出页面中所有图片并批量下载到本地文件夹，按序号命名。</p>
+<p><strong>技术要点</strong>：</p>
+<ul>
+<li>提取图片地址：BeautifulSoup 找 <code>&lt;img&gt;</code> 标签 + <code>urljoin</code> 补全相对路径</li>
+<li>下载图片：必须用 <code>response.content</code>（二进制），不能用 <code>.text</code></li>
+<li>文件名处理：从 URL 中提取后缀名，防止重名覆盖</li>
+<li>失败容忍：某张图下载失败不能影响其他图片</li>
+</ul>
+<h3 id="182">18.2 完整代码</h3>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">项目二：批量图片下载器</span>
+<span class="sd">功能：抓取指定网页中的所有图片，保存到本地文件夹</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bs4</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeautifulSoup</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse</span>
+
+<span class="n">HEADERS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) &#39;</span>
+                  <span class="s1">&#39;AppleWebKit/537.36 (KHTML, like Gecko) &#39;</span>
+                  <span class="s1">&#39;Chrome/120.0.0.0 Safari/537.36&#39;</span>
+<span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_image_urls</span><span class="p">(</span><span class="n">page_url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;第一步：获取页面中所有图片的完整URL&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">page_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">HEADERS</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;页面获取失败: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[]</span>
+
+    <span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>
+    <span class="n">urls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">soup</span><span class="o">.</span><span class="n">find_all</span><span class="p">(</span><span class="s1">&#39;img&#39;</span><span class="p">):</span>
+        <span class="n">src</span> <span class="o">=</span> <span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;src&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">img</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;data-src&#39;</span><span class="p">)</span>   <span class="c1"># 兼容懒加载图片</span>
+        <span class="k">if</span> <span class="n">src</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">src</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;data:&#39;</span><span class="p">):</span>        <span class="c1"># 排除base64内嵌图</span>
+            <span class="n">full_url</span> <span class="o">=</span> <span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">page_url</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">full_url</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+                <span class="n">urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full_url</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">urls</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">download_image</span><span class="p">(</span><span class="n">img_url</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;第二步：下载单张图片&quot;&quot;&quot;</span>
+    <span class="c1"># 从URL推断文件后缀，默认jpg</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">parse</span><span class="o">.</span><span class="n">urlparse</span><span class="p">(</span><span class="n">img_url</span><span class="p">)</span><span class="o">.</span><span class="n">path</span>
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">ext</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;.jpg&#39;</span><span class="p">,</span> <span class="s1">&#39;.jpeg&#39;</span><span class="p">,</span> <span class="s1">&#39;.png&#39;</span><span class="p">,</span> <span class="s1">&#39;.gif&#39;</span><span class="p">,</span> <span class="s1">&#39;.webp&#39;</span><span class="p">]:</span>
+        <span class="n">ext</span> <span class="o">=</span> <span class="s1">&#39;.jpg&#39;</span>
+
+    <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="sa">f</span><span class="s1">&#39;img_</span><span class="si">{</span><span class="n">index</span><span class="si">:</span><span class="s1">03d</span><span class="si">}{</span><span class="n">ext</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 图片防盗链常见对策：Referer 声明来源页面</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">HEADERS</span><span class="p">,</span> <span class="s1">&#39;Referer&#39;</span><span class="p">:</span> <span class="n">img_url</span><span class="p">}</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">img_url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>        <span class="c1"># &#39;wb&#39; 二进制写模式</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">True</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  下载失败 </span><span class="si">{</span><span class="n">img_url</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">False</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">download_all</span><span class="p">(</span><span class="n">page_url</span><span class="p">,</span> <span class="n">save_dir</span><span class="o">=</span><span class="s1">&#39;下载的图片&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;主流程&quot;&quot;&quot;</span>
+    <span class="c1"># 创建保存目录（exist_ok=True 避免目录已存在时报错）</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">save_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;正在分析页面: </span><span class="si">{</span><span class="n">page_url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">img_urls</span> <span class="o">=</span> <span class="n">get_image_urls</span><span class="p">(</span><span class="n">page_url</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;共发现 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">img_urls</span><span class="p">)</span><span class="si">}</span><span class="s1"> 张图片，开始下载...</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">success</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">url</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">img_urls</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">download_image</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">save_dir</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+            <span class="n">success</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;  [</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">/</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">img_urls</span><span class="p">)</span><span class="si">}</span><span class="s1">] 成功: </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>   <span class="c1"># 下载间隔，礼貌爬取</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">完成！成功 </span><span class="si">{</span><span class="n">success</span><span class="si">}</span><span class="s1"> 张，失败 </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">img_urls</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">success</span><span class="si">}</span><span class="s1"> 张&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;保存位置: </span><span class="si">{</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">save_dir</span><span class="p">)</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">download_all</span><span class="p">(</span><span class="s1">&#39;https://example.com&#39;</span><span class="p">)</span>   <span class="c1"># 换成你的目标网页</span>
+</code></pre></div>
+
+<h3 id="183">18.3 关键知识点回顾</h3>
+<table>
+<thead>
+<tr>
+<th>知识点</th>
+<th>出处</th>
+<th>本项目中的应用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>response.content</code> 二进制</td>
+<td>第二章</td>
+<td>图片必须用二进制写入</td>
+</tr>
+<tr>
+<td><code>Referer</code> 防盗链</td>
+<td>第二章</td>
+<td>部分网站图片直接访问会 403</td>
+</tr>
+<tr>
+<td><code>urljoin</code> 补全相对路径</td>
+<td>第三章</td>
+<td>网页里图片地址常是 <code>/img/xx.jpg</code></td>
+</tr>
+<tr>
+<td><code>data-src</code> 懒加载</td>
+<td>第四章</td>
+<td>很多网站图片真实地址藏在 data-src</td>
+</tr>
+<tr>
+<td><code>os.makedirs</code></td>
+<td>文件操作</td>
+<td>自动创建保存目录</td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">📝 本课练习</h3>
+<ol>
+<li>给下载器增加「文件大小过滤」：小于 10KB 的图片（通常是图标）不下载（提示：看 <code>len(response.content)</code>）。</li>
+<li>增加「按图片在网页中的顺序，用网页标题命名文件」的功能。</li>
+<li>思考：如果网站图片是滚动加载（翻到底才显示），requests 方案为什么抓不全？（为进阶课 Selenium 埋下伏笔）</li>
+</ol>
+<hr />
+<h2 id="19">第19课：实战三——数据存储与分析入门</h2>
+<h3 id="191">19.1 项目需求分析</h3>
+<p><strong>目标</strong>：把前面抓到的新闻数据做进一步处理——存入文件，并做一个简单的词频统计，回答「最近新闻里什么词最热」。</p>
+<p><strong>数据存储的三种选择</strong>：</p>
+<table>
+<thead>
+<tr>
+<th>方式</th>
+<th>适合场景</th>
+<th>难度</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TXT/CSV 文件</td>
+<td>几百到几万条，自己分析用</td>
+<td>⭐ 本课</td>
+</tr>
+<tr>
+<td>Excel 文件</td>
+<td>需要给非技术人员看</td>
+<td>⭐⭐</td>
+</tr>
+<tr>
+<td>数据库（MySQL/SQLite）</td>
+<td>大量数据、持续更新、多人共享</td>
+<td>⭐⭐⭐ 进阶</td>
+</tr>
+</tbody>
+</table>
+<h3 id="192">19.2 完整代码</h3>
+<blockquote>
+<p>本项目使用 <code>jieba</code> 中文分词库把标题切成词语，先安装：<code>pip install jieba</code>
+（第五章的正则也能切词，但中文没有空格分隔，专业分词库效果要好得多）</p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">项目三：新闻数据存储与热词分析</span>
+<span class="sd">流程：抓取 → 存储CSV → 读取 → 词频统计 → 输出报告</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">csv</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">jieba</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">Counter</span>
+
+<span class="c1"># ===== 第一部分：数据存储（复用项目一的核心逻辑） =====</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">save_to_csv</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">DictWriter</span><span class="p">(</span><span class="n">f</span><span class="p">,</span> <span class="n">fieldnames</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">])</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writeheader</span><span class="p">()</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_from_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;从CSV读取数据&quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">csv</span><span class="o">.</span><span class="n">DictReader</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+
+<span class="c1"># ===== 第二部分：数据分析 =====</span>
+
+<span class="c1"># 停用词：出现频率高但没有分析价值的词</span>
+<span class="n">STOP_WORDS</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;的&#39;</span><span class="p">,</span> <span class="s1">&#39;了&#39;</span><span class="p">,</span> <span class="s1">&#39;在&#39;</span><span class="p">,</span> <span class="s1">&#39;是&#39;</span><span class="p">,</span> <span class="s1">&#39;和&#39;</span><span class="p">,</span> <span class="s1">&#39;与&#39;</span><span class="p">,</span> <span class="s1">&#39;为&#39;</span><span class="p">,</span> <span class="s1">&#39;对&#39;</span><span class="p">,</span> <span class="s1">&#39;将&#39;</span><span class="p">,</span>
+              <span class="s1">&#39;年&#39;</span><span class="p">,</span> <span class="s1">&#39;月&#39;</span><span class="p">,</span> <span class="s1">&#39;日&#39;</span><span class="p">,</span> <span class="s1">&#39;一个&#39;</span><span class="p">,</span> <span class="s1">&#39;我们&#39;</span><span class="p">,</span> <span class="s1">&#39;你们&#39;</span><span class="p">,</span> <span class="s1">&#39;他们&#39;</span><span class="p">,</span> <span class="s1">&#39;the&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="s1">&#39;to&#39;</span><span class="p">}</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">analyze_hot_words</span><span class="p">(</span><span class="n">news_list</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="mi">20</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;统计新闻标题中的高频词&quot;&quot;&quot;</span>
+    <span class="n">all_words</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">news</span> <span class="ow">in</span> <span class="n">news_list</span><span class="p">:</span>
+        <span class="c1"># jieba.lcut 把标题切成词语列表</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="n">jieba</span><span class="o">.</span><span class="n">lcut</span><span class="p">(</span><span class="n">news</span><span class="p">[</span><span class="s1">&#39;title&#39;</span><span class="p">])</span>
+        <span class="c1"># 过滤：去掉单字词、空白和停用词</span>
+        <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">words</span>
+                 <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="o">&gt;=</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">w</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">STOP_WORDS</span><span class="p">]</span>
+        <span class="n">all_words</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+
+    <span class="c1"># Counter 一行完成词频统计</span>
+    <span class="n">counter</span> <span class="o">=</span> <span class="n">Counter</span><span class="p">(</span><span class="n">all_words</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">counter</span><span class="o">.</span><span class="n">most_common</span><span class="p">(</span><span class="n">top_n</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">generate_report</span><span class="p">(</span><span class="n">news_list</span><span class="p">,</span> <span class="n">hot_words</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;分析报告.txt&#39;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;生成文字分析报告&quot;&quot;&quot;</span>
+    <span class="n">lines</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;新闻数据热词分析报告&#39;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;=&#39;</span> <span class="o">*</span> <span class="mi">40</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;数据总量: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">news_list</span><span class="p">)</span><span class="si">}</span><span class="s1"> 条新闻&#39;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;【TOP </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">hot_words</span><span class="p">)</span><span class="si">}</span><span class="s1"> 热词榜】&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">rank</span><span class="p">,</span> <span class="p">(</span><span class="n">word</span><span class="p">,</span> <span class="n">count</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">hot_words</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>
+        <span class="n">bar</span> <span class="o">=</span> <span class="s1">&#39;█&#39;</span> <span class="o">*</span> <span class="n">count</span>   <span class="c1"># 用文字画个简单的柱状图</span>
+        <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">rank</span><span class="si">:</span><span class="s1">&gt;2</span><span class="si">}</span><span class="s1">. </span><span class="si">{</span><span class="n">word</span><span class="si">:</span><span class="s1">&lt;8</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">count</span><span class="si">:</span><span class="s1">&gt;3</span><span class="si">}</span><span class="s1">次 </span><span class="si">{</span><span class="n">bar</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">report</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">lines</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">报告已保存到 </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="c1"># 模拟已抓取的数据（实际使用时替换为项目一 crawl_news() 的结果）</span>
+    <span class="n">demo_data</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;人工智能助力医疗行业数字化转型&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">:</span> <span class="s1">&#39;http://a.com/1&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="s1">&#39;2024-01-15&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;新能源汽车销量创新高 行业前景广阔&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">:</span> <span class="s1">&#39;http://a.com/2&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="s1">&#39;2024-01-15&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;人工智能技术在教育领域的应用探索&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">:</span> <span class="s1">&#39;http://a.com/3&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="s1">&#39;2024-01-16&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;医疗行业迎来新一轮数字化升级浪潮&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">:</span> <span class="s1">&#39;http://a.com/4&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="s1">&#39;2024-01-16&#39;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s1">&#39;title&#39;</span><span class="p">:</span> <span class="s1">&#39;新能源电池技术取得重大突破&#39;</span><span class="p">,</span> <span class="s1">&#39;link&#39;</span><span class="p">:</span> <span class="s1">&#39;http://a.com/5&#39;</span><span class="p">,</span> <span class="s1">&#39;time&#39;</span><span class="p">:</span> <span class="s1">&#39;2024-01-17&#39;</span><span class="p">},</span>
+    <span class="p">]</span>
+
+    <span class="c1"># 1. 存储</span>
+    <span class="n">save_to_csv</span><span class="p">(</span><span class="n">demo_data</span><span class="p">,</span> <span class="s1">&#39;新闻数据.csv&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 2. 读取</span>
+    <span class="n">news_list</span> <span class="o">=</span> <span class="n">load_from_csv</span><span class="p">(</span><span class="s1">&#39;新闻数据.csv&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3. 分析</span>
+    <span class="n">hot_words</span> <span class="o">=</span> <span class="n">analyze_hot_words</span><span class="p">(</span><span class="n">news_list</span><span class="p">,</span> <span class="n">top_n</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+    <span class="c1"># 4. 报告</span>
+    <span class="n">generate_report</span><span class="p">(</span><span class="n">news_list</span><span class="p">,</span> <span class="n">hot_words</span><span class="p">)</span>
+</code></pre></div>
+
+<p>运行结果示例：</p>
+<div class="codehilite"><pre><span></span><code>========================================
+新闻数据热词分析报告
+========================================
+数据总量: 5 条新闻
+
+【TOP 10 热词榜】
+ 1. 行业       3次 ███
+ 2. 人工智能     2次 ██
+ 3. 医疗       2次 ██
+ 4. 数字化      2次 ██
+ 5. 新能源      2次 ██
+ 6. 技术       2次 ██
+ 7. 助力       1次 █
+ 8. 转型       1次 █
+ 9. 汽车销量     1次 █
+10. 创新       1次 █
+</code></pre></div>
+
+<h3 id="193">19.3 进阶方向（学完本课程后学什么）</h3>
+<p>本课程到这里，你已经掌握了爬虫的完整闭环。继续深入可以沿着这些方向：</p>
+<ol>
+<li><strong>动态网页抓取</strong>：学习 Selenium / Playwright，应对 JavaScript 渲染的网页</li>
+<li><strong>Scrapy 框架</strong>：大规模、工程化爬虫的标准方案</li>
+<li><strong>反爬对抗</strong>：IP 代理池、验证码处理、请求指纹</li>
+<li><strong>数据可视化</strong>：用 pandas + matplotlib 把分析结果画成图表</li>
+<li><strong>定时任务</strong>：让爬虫每天自动运行，数据自动更新</li>
+</ol>
+<h3 id="_3">📝 本课练习</h3>
+<ol>
+<li>把项目三的分析对象从「标题」换成「新闻正文」，对比热词榜的变化。</li>
+<li>扩充停用词表，让热词榜更有信息量。</li>
+<li>综合大作业：任选三个实战项目，把它们串成一条流水线——「项目一抓新闻 → 项目二顺带下载新闻配图 → 项目三分析并出报告」。</li>
+</ol>
+<hr /></div>
+  <div class="pager"><a href="ch5.html"><span class="dir">← 上一篇</span>第五章：正则表达式</a><a href="appendix.html" class="next"><span class="dir">下一篇 →</span>总结与FAQ</a></div>
+</main>
+</div>
+</body>
+</html>

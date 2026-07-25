@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第五章：正则表达式 - Python爬虫入门到实战</title>
+<style>
+:root{--bg:#0f0f0f;--bg2:#1a1a1a;--card:#1a1a2e;--card2:#16213e;--line:rgba(255,255,255,.08);
+--txt:#e8e8e8;--muted:#9aa0a6;--c1:#00a1d6;--c2:#5856d6;--accent:#00c3ff;--orange:#ff6b35}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+background:var(--bg);color:var(--txt);line-height:1.8}
+a{color:var(--accent);text-decoration:none}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:280px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--line);
+padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .brand{font-size:18px;font-weight:700;margin-bottom:6px;
+background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;
+-webkit-text-fill-color:transparent}
+.sidebar .brand-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.sidebar nav a{display:block;padding:9px 14px;border-radius:10px;color:var(--txt);font-size:14px;margin-bottom:4px;transition:.2s}
+.sidebar nav a:hover{background:rgba(255,255,255,.06)}
+.sidebar nav a.active{background:linear-gradient(90deg,rgba(0,161,214,.25),rgba(88,86,214,.25));color:#fff;font-weight:600}
+.sidebar nav a .num{display:inline-block;width:22px;color:var(--accent);font-weight:700}
+.main{flex:1;min-width:0;padding:48px 56px;max-width:980px}
+.content h1{font-size:30px;margin:0 0 24px;padding-bottom:16px;border-bottom:1px solid var(--line);
+background:linear-gradient(90deg,#fff,#a0aec0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.content h2{font-size:23px;margin:40px 0 16px;color:#fff;padding-left:12px;border-left:4px solid var(--c1)}
+.content h3{font-size:18px;margin:28px 0 12px;color:var(--accent)}
+.content p{margin:12px 0}
+.content ul,.content ol{margin:12px 0 12px 24px}
+.content li{margin:6px 0}
+.content strong{color:#fff}
+.content blockquote{margin:16px 0;padding:14px 18px;background:linear-gradient(135deg,var(--card),var(--card2));
+border-left:4px solid var(--c2);border-radius:0 12px 12px 0;color:var(--muted)}
+.content table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;display:block;overflow-x:auto}
+.content th,.content td{border:1px solid var(--line);padding:9px 14px;text-align:left;white-space:nowrap}
+.content th{background:linear-gradient(90deg,rgba(0,161,214,.2),rgba(88,86,214,.2));color:#fff}
+.content tr:nth-child(even){background:rgba(255,255,255,.02)}
+.content code{font-family:'JetBrains Mono',Consolas,Monaco,monospace;font-size:.92em;
+background:rgba(0,161,214,.12);color:#7dd3fc;padding:2px 7px;border-radius:6px}
+.content pre{margin:16px 0;border-radius:14px;overflow-x:auto;border:1px solid var(--line)}
+.content pre code{display:block;padding:18px 20px;background:#0d1117;color:#e6edf3;font-size:13.5px;line-height:1.7}
+.codehilite{background:#0d1117;border-radius:14px}
+.codehilite pre{margin:0;border:none}
+.pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+.pager a{flex:1;max-width:48%;padding:14px 20px;background:linear-gradient(135deg,var(--card),var(--card2));
+border:1px solid var(--line);border-radius:14px;color:var(--txt);transition:.25s}
+.pager a:hover{border-color:var(--c1);transform:translateY(-2px)}
+.pager .dir{font-size:12px;color:var(--muted);display:block}
+.pager .next{text-align:right;margin-left:auto}
+.toc-inline{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--line);
+border-radius:14px;padding:18px 22px;margin:20px 0 28px;font-size:14px}
+.toc-inline b{color:#fff}
+.toc-inline a{margin-right:16px;white-space:nowrap}
+.hero{background:linear-gradient(135deg,var(--c1) 0%,#00c3ff 50%,var(--c2) 100%);border-radius:20px;
+padding:40px 36px;margin-bottom:28px}
+.hero h1{-webkit-text-fill-color:#fff !important;border:none;padding:0;margin:0 0 10px !important;font-size:32px !important}
+.hero p{color:rgba(255,255,255,.92);margin:0}
+.menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:99;background:var(--card);color:#fff;
+border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:15px;cursor:pointer}
+@media(max-width:900px){
+.sidebar{position:fixed;left:-300px;transition:.3s;z-index:98;height:100vh}
+.sidebar.open{left:0}
+.main{padding:64px 22px}
+.menu-btn{display:block}}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #49483e }
+.codehilite { background: #272822; color: #F8F8F2 }
+.codehilite .c { color: #959077 } /* Comment */
+.codehilite .err { color: #ED007E; background-color: #1E0010 } /* Error */
+.codehilite .esc { color: #F8F8F2 } /* Escape */
+.codehilite .g { color: #F8F8F2 } /* Generic */
+.codehilite .k { color: #66D9EF } /* Keyword */
+.codehilite .l { color: #AE81FF } /* Literal */
+.codehilite .n { color: #F8F8F2 } /* Name */
+.codehilite .o { color: #FF4689 } /* Operator */
+.codehilite .x { color: #F8F8F2 } /* Other */
+.codehilite .p { color: #F8F8F2 } /* Punctuation */
+.codehilite .ch { color: #959077 } /* Comment.Hashbang */
+.codehilite .cm { color: #959077 } /* Comment.Multiline */
+.codehilite .cp { color: #959077 } /* Comment.Preproc */
+.codehilite .cpf { color: #959077 } /* Comment.PreprocFile */
+.codehilite .c1 { color: #959077 } /* Comment.Single */
+.codehilite .cs { color: #959077 } /* Comment.Special */
+.codehilite .gd { color: #FF4689 } /* Generic.Deleted */
+.codehilite .ge { color: #F8F8F2; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #F8F8F2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #F8F8F2 } /* Generic.Error */
+.codehilite .gh { color: #F8F8F2 } /* Generic.Heading */
+.codehilite .gi { color: #A6E22E } /* Generic.Inserted */
+.codehilite .go { color: #66D9EF } /* Generic.Output */
+.codehilite .gp { color: #FF4689; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { color: #F8F8F2; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #959077 } /* Generic.Subheading */
+.codehilite .gt { color: #F8F8F2 } /* Generic.Traceback */
+.codehilite .kc { color: #66D9EF } /* Keyword.Constant */
+.codehilite .kd { color: #66D9EF } /* Keyword.Declaration */
+.codehilite .kn { color: #FF4689 } /* Keyword.Namespace */
+.codehilite .kp { color: #66D9EF } /* Keyword.Pseudo */
+.codehilite .kr { color: #66D9EF } /* Keyword.Reserved */
+.codehilite .kt { color: #66D9EF } /* Keyword.Type */
+.codehilite .ld { color: #E6DB74 } /* Literal.Date */
+.codehilite .m { color: #AE81FF } /* Literal.Number */
+.codehilite .s { color: #E6DB74 } /* Literal.String */
+.codehilite .na { color: #A6E22E } /* Name.Attribute */
+.codehilite .nb { color: #F8F8F2 } /* Name.Builtin */
+.codehilite .nc { color: #A6E22E } /* Name.Class */
+.codehilite .no { color: #66D9EF } /* Name.Constant */
+.codehilite .nd { color: #A6E22E } /* Name.Decorator */
+.codehilite .ni { color: #F8F8F2 } /* Name.Entity */
+.codehilite .ne { color: #A6E22E } /* Name.Exception */
+.codehilite .nf { color: #A6E22E } /* Name.Function */
+.codehilite .nl { color: #F8F8F2 } /* Name.Label */
+.codehilite .nn { color: #F8F8F2 } /* Name.Namespace */
+.codehilite .nx { color: #A6E22E } /* Name.Other */
+.codehilite .py { color: #F8F8F2 } /* Name.Property */
+.codehilite .nt { color: #FF4689 } /* Name.Tag */
+.codehilite .nv { color: #F8F8F2 } /* Name.Variable */
+.codehilite .ow { color: #FF4689 } /* Operator.Word */
+.codehilite .pm { color: #F8F8F2 } /* Punctuation.Marker */
+.codehilite .w { color: #F8F8F2 } /* Text.Whitespace */
+.codehilite .mb { color: #AE81FF } /* Literal.Number.Bin */
+.codehilite .mf { color: #AE81FF } /* Literal.Number.Float */
+.codehilite .mh { color: #AE81FF } /* Literal.Number.Hex */
+.codehilite .mi { color: #AE81FF } /* Literal.Number.Integer */
+.codehilite .mo { color: #AE81FF } /* Literal.Number.Oct */
+.codehilite .sa { color: #E6DB74 } /* Literal.String.Affix */
+.codehilite .sb { color: #E6DB74 } /* Literal.String.Backtick */
+.codehilite .sc { color: #E6DB74 } /* Literal.String.Char */
+.codehilite .dl { color: #E6DB74 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #E6DB74 } /* Literal.String.Doc */
+.codehilite .s2 { color: #E6DB74 } /* Literal.String.Double */
+.codehilite .se { color: #AE81FF } /* Literal.String.Escape */
+.codehilite .sh { color: #E6DB74 } /* Literal.String.Heredoc */
+.codehilite .si { color: #E6DB74 } /* Literal.String.Interpol */
+.codehilite .sx { color: #E6DB74 } /* Literal.String.Other */
+.codehilite .sr { color: #E6DB74 } /* Literal.String.Regex */
+.codehilite .s1 { color: #E6DB74 } /* Literal.String.Single */
+.codehilite .ss { color: #E6DB74 } /* Literal.String.Symbol */
+.codehilite .bp { color: #F8F8F2 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #A6E22E } /* Name.Function.Magic */
+.codehilite .vc { color: #F8F8F2 } /* Name.Variable.Class */
+.codehilite .vg { color: #F8F8F2 } /* Name.Variable.Global */
+.codehilite .vi { color: #F8F8F2 } /* Name.Variable.Instance */
+.codehilite .vm { color: #F8F8F2 } /* Name.Variable.Magic */
+.codehilite .il { color: #AE81FF } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ 目录</button>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">Python爬虫入门到实战</div>
+  <div class="brand-sub">新手引导课程 · 完整讲义</div>
+  <nav><a href="index.html" class="">课程导读</a><a href="prep.html" class="">课前准备</a><a href="ch1.html" class="">第一章：爬虫基础概念</a><a href="ch2.html" class="">第二章：requests库详解</a><a href="ch3.html" class="">第三章：urllib库详解</a><a href="ch4.html" class="">第四章：BeautifulSoup解析</a><a href="ch5.html" class="active">第五章：正则表达式</a><a href="ch6.html" class="">第六章：实战项目</a><a href="appendix.html" class="">总结与FAQ</a></nav>
+</aside>
+<main class="main">
+  <div class="content"><h1 id="45-2">第五章：正则表达式（45分钟 · 2节课）</h1><div class="toc-inline"><b>本章节目录：</b><br><a href="#15">第15课：正则表达式基础</a><a href="#16url">第16课：正则实战——提取邮箱与URL</a></div>
+<p><strong>本章目标</strong>：掌握正则表达式这个「文本搜索神器」。BeautifulSoup 擅长解析规范的 HTML 结构，而正则擅长从<strong>任意文本</strong>（JSON 字符串、日志、混杂文本）中按模式捞数据，两者互补。</p>
+<blockquote>
+<p>re 是 Python 标准库，<code>import re</code> 即可使用，无需安装。</p>
+</blockquote>
+<hr />
+<h2 id="15">第15课：正则表达式基础</h2>
+<h3 id="151">15.1 什么时候用正则</h3>
+<p>对比感受两种工具的分工：</p>
+<ul>
+<li>「提取 <code>&lt;div class="news"&gt;</code> 里所有标题」→ 结构清晰，用 <strong>BeautifulSoup</strong></li>
+<li>「从一大段文本里找出所有手机号、价格、日期」→ 没有标签结构，用 <strong>正则表达式</strong></li>
+</ul>
+<h3 id="152">15.2 核心符号速查表</h3>
+<p>正则就是一套「符号暗号」，先记住最常用的：</p>
+<table>
+<thead>
+<tr>
+<th>符号</th>
+<th>含义</th>
+<th>例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>\d</code></td>
+<td>一个数字</td>
+<td><code>\d\d\d</code> 匹配三位数</td>
+</tr>
+<tr>
+<td><code>\w</code></td>
+<td>字母/数字/下划线/中文</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>\s</code></td>
+<td>空白字符（空格/换行）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>.</code></td>
+<td>任意字符（除换行）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>*</code></td>
+<td>前一个出现 0 次或多次</td>
+<td><code>ab*</code> 匹配 a、ab、abb</td>
+</tr>
+<tr>
+<td><code>+</code></td>
+<td>前一个出现 1 次或多次</td>
+<td><code>\d+</code> 匹配任意长度数字</td>
+</tr>
+<tr>
+<td><code>?</code></td>
+<td>前一个出现 0 次或 1 次</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>{n,m}</code></td>
+<td>前一个出现 n 到 m 次</td>
+<td><code>\d{11}</code> 恰好 11 位数字</td>
+</tr>
+<tr>
+<td><code>[]</code></td>
+<td>字符集合</td>
+<td><code>[0-9a-z]</code></td>
+</tr>
+<tr>
+<td><code>()</code></td>
+<td>分组（提取想要的部分）</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>^</code> <code>$</code></td>
+<td>开头 / 结尾</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="153-re">15.3 re 模块四大常用函数</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;订单A价格299元，订单B价格1280元，订单C价格59元&#39;</span>
+
+<span class="c1"># 1. findall：找出所有匹配，返回列表（最常用）</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>   <span class="c1"># [&#39;299&#39;, &#39;1280&#39;, &#39;59&#39;]</span>
+
+<span class="c1"># 2. search：找第一个匹配，返回 Match 对象</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">m</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">group</span><span class="p">())</span>   <span class="c1"># 299</span>
+
+<span class="c1"># 3. sub：替换</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span> <span class="s1">&#39;***&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>   <span class="c1"># 订单A价格***元，订单B价格***元，订单C价格***元</span>
+
+<span class="c1"># 4. split：按模式切分</span>
+<span class="n">parts</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;，&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">parts</span><span class="p">)</span>    <span class="c1"># [&#39;订单A价格299元&#39;, &#39;订单B价格1280元&#39;, &#39;订单C价格59元&#39;]</span>
+</code></pre></div>
+
+<blockquote>
+<p>💡 模式字符串前面加 <code>r</code>（如 <code>r'\d+'</code>）表示「原始字符串」，避免 <code>\</code> 被 Python 提前转义，<strong>写正则永远带 r</strong>。</p>
+</blockquote>
+<h3 id="154">15.4 分组提取：只要想要的部分</h3>
+<p><code>()</code> 分组是正则提取数据的精髓——模式负责「定位」，括号负责「取货」：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;订单A价格299元，订单B价格1280元&#39;</span>
+
+<span class="c1"># 定位&quot;价格...元&quot;，但只提取括号里的数字</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;价格(\d+)元&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">prices</span><span class="p">)</span>   <span class="c1"># [&#39;299&#39;, &#39;1280&#39;]</span>
+
+<span class="c1"># 多组提取：一次抓多个字段</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">price</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(订单\w+)价格(\d+)元&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">price</span><span class="si">}</span><span class="s1">元&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="155">15.5 贪婪与非贪婪：爬虫高频坑</h3>
+<ul>
+<li><strong>贪婪（默认）</strong>：<code>.*</code> 尽可能多吃字符</li>
+<li><strong>非贪婪</strong>：<code>.*?</code> 吃到满足条件就停</li>
+</ul>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="n">html</span> <span class="o">=</span> <span class="s1">&#39;&lt;p&gt;第一段&lt;/p&gt;&lt;p&gt;第二段&lt;/p&gt;&#39;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&lt;p&gt;.*&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">))</span>
+<span class="c1"># [&#39;&lt;p&gt;第一段&lt;/p&gt;&lt;p&gt;第二段&lt;/p&gt;&#39;]   ← 贪婪：一口吞到最后的&lt;/p&gt;</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&lt;p&gt;(.*?)&lt;/p&gt;&#39;</span><span class="p">,</span> <span class="n">html</span><span class="p">))</span>
+<span class="c1"># [&#39;第一段&#39;, &#39;第二段&#39;]              ← 非贪婪：精准匹配每个段落</span>
+</code></pre></div>
+
+<p><strong>爬虫提取 HTML 内容时，绝大多数情况用 <code>.*?</code>（非贪婪）</strong>，这是老司机的经验之谈。</p>
+<h3 id="_1">📝 本课练习</h3>
+<ol>
+<li>从文本「温度：28°C，湿度：65%，风速：12km/h」中提取所有数字。</li>
+<li>用正则从「订单编号：OD20240088，金额：¥1580.50」中提取订单号和金额（提示：金额含小数点 <code>\d+\.\d+</code>）。</li>
+<li>解释 <code>.*?</code> 和 <code>.*</code> 的区别，并举一个用错会出问题的例子。</li>
+</ol>
+<hr />
+<h2 id="16url">第16课：正则实战——提取邮箱与URL</h2>
+<h3 id="161">16.1 提取邮箱地址</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">联系我们：技术支持 support@example.com，</span>
+<span class="s1">销售邮箱 sales_team@company.org.cn，</span>
+<span class="s1">也可以写信给 admin@mail.example-site.com</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="n">pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;[\w.+-]+@[\w-]+(?:\.[\w-]+)+&#39;</span>
+<span class="n">emails</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">emails</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</code></pre></div>
+
+<p>输出：</p>
+<div class="codehilite"><pre><span></span><code>support@example.com
+sales_team@company.org.cn
+admin@mail.example-site.com
+</code></pre></div>
+
+<p>逐段拆解这个模式：</p>
+<ul>
+<li><code>[\w.+-]+</code> —— @ 前面的用户名：字母数字下划线，还可能有点和加减号</li>
+<li><code>@</code> —— 字面意义的 @</li>
+<li><code>[\w-]+</code> —— 域名主体部分</li>
+<li><code>(?:\.[\w-]+)+</code> —— 后缀部分：<code>\.</code> 是字面意义的点（<code>.</code> 在正则里是特殊符号，要 <code>\</code> 转义），<code>(?:...)</code> 表示只分组不提取，<code>+</code> 表示「点+一段字符」可重复多次，从而兼容 <code>.org.cn</code> 这种多级后缀和 <code>mail.example-site.com</code> 这种带横线的域名</li>
+</ul>
+<h3 id="162-url">16.2 提取 URL 链接</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="n">text</span> <span class="o">=</span> <span class="s1">&#39;&#39;&#39;</span>
+<span class="s1">推荐教程 https://www.example.com/python 和</span>
+<span class="s1">http://blog.demo.org/spider?page=2，</span>
+<span class="s1">图片地址 https://cdn.example.com/img/logo.png</span>
+<span class="s1">&#39;&#39;&#39;</span>
+
+<span class="n">urls</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;https?://[\w./?=&amp;%-]+&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">u</span> <span class="ow">in</span> <span class="n">urls</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">u</span><span class="p">)</span>
+</code></pre></div>
+
+<ul>
+<li><code>https?</code> —— <code>s?</code> 表示 s 出现 0 或 1 次，同时兼容 http 和 https</li>
+<li><code>[\w./?=&amp;%-]+</code> —— URL 中可能出现的字符集合</li>
+</ul>
+<h3 id="163">16.3 实战组合：从网页源码中提取所有图片地址</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">urllib</span><span class="w"> </span><span class="kn">import</span> <span class="n">parse</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">extract_images</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;提取网页中所有图片的完整地址&quot;&quot;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0&#39;</span>
+    <span class="p">}</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+    <span class="n">response</span><span class="o">.</span><span class="n">encoding</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">apparent_encoding</span>
+
+    <span class="c1"># 匹配 &lt;img&gt; 标签里的 src 属性</span>
+    <span class="n">img_srcs</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&lt;img[^&gt;]+src=[&quot;</span><span class="se">\&#39;</span><span class="s1">](.*?)[&quot;</span><span class="se">\&#39;</span><span class="s1">]&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+
+    <span class="c1"># 相对路径转绝对路径 + 去重</span>
+    <span class="n">full_urls</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">src</span> <span class="ow">in</span> <span class="n">img_srcs</span><span class="p">:</span>
+        <span class="n">full</span> <span class="o">=</span> <span class="n">parse</span><span class="o">.</span><span class="n">urljoin</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">src</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">full</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">full_urls</span><span class="p">:</span>
+            <span class="n">full_urls</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">full</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">full_urls</span>
+
+<span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">extract_images</span><span class="p">(</span><span class="s1">&#39;https://example.com&#39;</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="164">16.4 其他常用正则模板（收藏备用）</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+
+<span class="c1"># 手机号（中国大陆11位）</span>
+<span class="n">phones</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;1[3-9]\d</span><span class="si">{9}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="c1"># 身份证号（18位）</span>
+<span class="n">id_cards</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{17}</span><span class="s1">[\dXx]&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="c1"># 日期 2024-01-15 或 2024/01/15</span>
+<span class="n">dates</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\d</span><span class="si">{4}</span><span class="s1">[-/]\d{1,2}[-/]\d{1,2}&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="c1"># 中文字符</span>
+<span class="n">chinese</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[一-龥]+&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+
+<span class="c1"># 价格 ¥299 或 ¥1280.50</span>
+<span class="n">prices</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;¥\s*(\d+(?:\.\d+)?)&#39;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="165-beautifulsoup">16.5 BeautifulSoup 与正则的决策指南</h3>
+<table>
+<thead>
+<tr>
+<th>场景</th>
+<th>推荐工具</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>结构规范的 HTML 标签内容</td>
+<td>BeautifulSoup</td>
+</tr>
+<tr>
+<td>文本中零散的手机号/邮箱/日期</td>
+<td>正则表达式</td>
+</tr>
+<tr>
+<td>嵌套在 JS 代码、script 标签里的数据</td>
+<td>正则表达式</td>
+</tr>
+<tr>
+<td>先定位标签、再从文本里抠数字</td>
+<td><strong>两者组合</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="_2">📝 本课练习</h3>
+<ol>
+<li>从「客服电话：13800138000，备用：15912345678」提取所有手机号并验证数量。</li>
+<li>验证本课邮箱正则能匹配 <code>first.last+tag@sub.domain.com</code> 这样的复杂邮箱，并尝试解释为什么 <code>(?:\.[\w-]+)+</code> 比 <code>\.[\w.]+</code> 更严谨。</li>
+<li>用组合方式完成：先用 BeautifulSoup 取出所有 <code>&lt;p&gt;</code> 标签文本，再用正则从中提取所有日期。</li>
+</ol>
+<hr /></div>
+  <div class="pager"><a href="ch4.html"><span class="dir">← 上一篇</span>第四章：BeautifulSoup解析</a><a href="ch6.html" class="next"><span class="dir">下一篇 →</span>第六章：实战项目</a></div>
+</main>
+</div>
+</body>
+</html>

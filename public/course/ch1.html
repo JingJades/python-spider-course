@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第一章：爬虫基础概念 - Python爬虫入门到实战</title>
+<style>
+:root{--bg:#0f0f0f;--bg2:#1a1a1a;--card:#1a1a2e;--card2:#16213e;--line:rgba(255,255,255,.08);
+--txt:#e8e8e8;--muted:#9aa0a6;--c1:#00a1d6;--c2:#5856d6;--accent:#00c3ff;--orange:#ff6b35}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+background:var(--bg);color:var(--txt);line-height:1.8}
+a{color:var(--accent);text-decoration:none}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:280px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--line);
+padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .brand{font-size:18px;font-weight:700;margin-bottom:6px;
+background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;
+-webkit-text-fill-color:transparent}
+.sidebar .brand-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.sidebar nav a{display:block;padding:9px 14px;border-radius:10px;color:var(--txt);font-size:14px;margin-bottom:4px;transition:.2s}
+.sidebar nav a:hover{background:rgba(255,255,255,.06)}
+.sidebar nav a.active{background:linear-gradient(90deg,rgba(0,161,214,.25),rgba(88,86,214,.25));color:#fff;font-weight:600}
+.sidebar nav a .num{display:inline-block;width:22px;color:var(--accent);font-weight:700}
+.main{flex:1;min-width:0;padding:48px 56px;max-width:980px}
+.content h1{font-size:30px;margin:0 0 24px;padding-bottom:16px;border-bottom:1px solid var(--line);
+background:linear-gradient(90deg,#fff,#a0aec0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.content h2{font-size:23px;margin:40px 0 16px;color:#fff;padding-left:12px;border-left:4px solid var(--c1)}
+.content h3{font-size:18px;margin:28px 0 12px;color:var(--accent)}
+.content p{margin:12px 0}
+.content ul,.content ol{margin:12px 0 12px 24px}
+.content li{margin:6px 0}
+.content strong{color:#fff}
+.content blockquote{margin:16px 0;padding:14px 18px;background:linear-gradient(135deg,var(--card),var(--card2));
+border-left:4px solid var(--c2);border-radius:0 12px 12px 0;color:var(--muted)}
+.content table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;display:block;overflow-x:auto}
+.content th,.content td{border:1px solid var(--line);padding:9px 14px;text-align:left;white-space:nowrap}
+.content th{background:linear-gradient(90deg,rgba(0,161,214,.2),rgba(88,86,214,.2));color:#fff}
+.content tr:nth-child(even){background:rgba(255,255,255,.02)}
+.content code{font-family:'JetBrains Mono',Consolas,Monaco,monospace;font-size:.92em;
+background:rgba(0,161,214,.12);color:#7dd3fc;padding:2px 7px;border-radius:6px}
+.content pre{margin:16px 0;border-radius:14px;overflow-x:auto;border:1px solid var(--line)}
+.content pre code{display:block;padding:18px 20px;background:#0d1117;color:#e6edf3;font-size:13.5px;line-height:1.7}
+.codehilite{background:#0d1117;border-radius:14px}
+.codehilite pre{margin:0;border:none}
+.pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+.pager a{flex:1;max-width:48%;padding:14px 20px;background:linear-gradient(135deg,var(--card),var(--card2));
+border:1px solid var(--line);border-radius:14px;color:var(--txt);transition:.25s}
+.pager a:hover{border-color:var(--c1);transform:translateY(-2px)}
+.pager .dir{font-size:12px;color:var(--muted);display:block}
+.pager .next{text-align:right;margin-left:auto}
+.toc-inline{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--line);
+border-radius:14px;padding:18px 22px;margin:20px 0 28px;font-size:14px}
+.toc-inline b{color:#fff}
+.toc-inline a{margin-right:16px;white-space:nowrap}
+.hero{background:linear-gradient(135deg,var(--c1) 0%,#00c3ff 50%,var(--c2) 100%);border-radius:20px;
+padding:40px 36px;margin-bottom:28px}
+.hero h1{-webkit-text-fill-color:#fff !important;border:none;padding:0;margin:0 0 10px !important;font-size:32px !important}
+.hero p{color:rgba(255,255,255,.92);margin:0}
+.menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:99;background:var(--card);color:#fff;
+border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:15px;cursor:pointer}
+@media(max-width:900px){
+.sidebar{position:fixed;left:-300px;transition:.3s;z-index:98;height:100vh}
+.sidebar.open{left:0}
+.main{padding:64px 22px}
+.menu-btn{display:block}}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #49483e }
+.codehilite { background: #272822; color: #F8F8F2 }
+.codehilite .c { color: #959077 } /* Comment */
+.codehilite .err { color: #ED007E; background-color: #1E0010 } /* Error */
+.codehilite .esc { color: #F8F8F2 } /* Escape */
+.codehilite .g { color: #F8F8F2 } /* Generic */
+.codehilite .k { color: #66D9EF } /* Keyword */
+.codehilite .l { color: #AE81FF } /* Literal */
+.codehilite .n { color: #F8F8F2 } /* Name */
+.codehilite .o { color: #FF4689 } /* Operator */
+.codehilite .x { color: #F8F8F2 } /* Other */
+.codehilite .p { color: #F8F8F2 } /* Punctuation */
+.codehilite .ch { color: #959077 } /* Comment.Hashbang */
+.codehilite .cm { color: #959077 } /* Comment.Multiline */
+.codehilite .cp { color: #959077 } /* Comment.Preproc */
+.codehilite .cpf { color: #959077 } /* Comment.PreprocFile */
+.codehilite .c1 { color: #959077 } /* Comment.Single */
+.codehilite .cs { color: #959077 } /* Comment.Special */
+.codehilite .gd { color: #FF4689 } /* Generic.Deleted */
+.codehilite .ge { color: #F8F8F2; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #F8F8F2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #F8F8F2 } /* Generic.Error */
+.codehilite .gh { color: #F8F8F2 } /* Generic.Heading */
+.codehilite .gi { color: #A6E22E } /* Generic.Inserted */
+.codehilite .go { color: #66D9EF } /* Generic.Output */
+.codehilite .gp { color: #FF4689; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { color: #F8F8F2; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #959077 } /* Generic.Subheading */
+.codehilite .gt { color: #F8F8F2 } /* Generic.Traceback */
+.codehilite .kc { color: #66D9EF } /* Keyword.Constant */
+.codehilite .kd { color: #66D9EF } /* Keyword.Declaration */
+.codehilite .kn { color: #FF4689 } /* Keyword.Namespace */
+.codehilite .kp { color: #66D9EF } /* Keyword.Pseudo */
+.codehilite .kr { color: #66D9EF } /* Keyword.Reserved */
+.codehilite .kt { color: #66D9EF } /* Keyword.Type */
+.codehilite .ld { color: #E6DB74 } /* Literal.Date */
+.codehilite .m { color: #AE81FF } /* Literal.Number */
+.codehilite .s { color: #E6DB74 } /* Literal.String */
+.codehilite .na { color: #A6E22E } /* Name.Attribute */
+.codehilite .nb { color: #F8F8F2 } /* Name.Builtin */
+.codehilite .nc { color: #A6E22E } /* Name.Class */
+.codehilite .no { color: #66D9EF } /* Name.Constant */
+.codehilite .nd { color: #A6E22E } /* Name.Decorator */
+.codehilite .ni { color: #F8F8F2 } /* Name.Entity */
+.codehilite .ne { color: #A6E22E } /* Name.Exception */
+.codehilite .nf { color: #A6E22E } /* Name.Function */
+.codehilite .nl { color: #F8F8F2 } /* Name.Label */
+.codehilite .nn { color: #F8F8F2 } /* Name.Namespace */
+.codehilite .nx { color: #A6E22E } /* Name.Other */
+.codehilite .py { color: #F8F8F2 } /* Name.Property */
+.codehilite .nt { color: #FF4689 } /* Name.Tag */
+.codehilite .nv { color: #F8F8F2 } /* Name.Variable */
+.codehilite .ow { color: #FF4689 } /* Operator.Word */
+.codehilite .pm { color: #F8F8F2 } /* Punctuation.Marker */
+.codehilite .w { color: #F8F8F2 } /* Text.Whitespace */
+.codehilite .mb { color: #AE81FF } /* Literal.Number.Bin */
+.codehilite .mf { color: #AE81FF } /* Literal.Number.Float */
+.codehilite .mh { color: #AE81FF } /* Literal.Number.Hex */
+.codehilite .mi { color: #AE81FF } /* Literal.Number.Integer */
+.codehilite .mo { color: #AE81FF } /* Literal.Number.Oct */
+.codehilite .sa { color: #E6DB74 } /* Literal.String.Affix */
+.codehilite .sb { color: #E6DB74 } /* Literal.String.Backtick */
+.codehilite .sc { color: #E6DB74 } /* Literal.String.Char */
+.codehilite .dl { color: #E6DB74 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #E6DB74 } /* Literal.String.Doc */
+.codehilite .s2 { color: #E6DB74 } /* Literal.String.Double */
+.codehilite .se { color: #AE81FF } /* Literal.String.Escape */
+.codehilite .sh { color: #E6DB74 } /* Literal.String.Heredoc */
+.codehilite .si { color: #E6DB74 } /* Literal.String.Interpol */
+.codehilite .sx { color: #E6DB74 } /* Literal.String.Other */
+.codehilite .sr { color: #E6DB74 } /* Literal.String.Regex */
+.codehilite .s1 { color: #E6DB74 } /* Literal.String.Single */
+.codehilite .ss { color: #E6DB74 } /* Literal.String.Symbol */
+.codehilite .bp { color: #F8F8F2 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #A6E22E } /* Name.Function.Magic */
+.codehilite .vc { color: #F8F8F2 } /* Name.Variable.Class */
+.codehilite .vg { color: #F8F8F2 } /* Name.Variable.Global */
+.codehilite .vi { color: #F8F8F2 } /* Name.Variable.Instance */
+.codehilite .vm { color: #F8F8F2 } /* Name.Variable.Magic */
+.codehilite .il { color: #AE81FF } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ 目录</button>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">Python爬虫入门到实战</div>
+  <div class="brand-sub">新手引导课程 · 完整讲义</div>
+  <nav><a href="index.html" class="">课程导读</a><a href="prep.html" class="">课前准备</a><a href="ch1.html" class="active">第一章：爬虫基础概念</a><a href="ch2.html" class="">第二章：requests库详解</a><a href="ch3.html" class="">第三章：urllib库详解</a><a href="ch4.html" class="">第四章：BeautifulSoup解析</a><a href="ch5.html" class="">第五章：正则表达式</a><a href="ch6.html" class="">第六章：实战项目</a><a href="appendix.html" class="">总结与FAQ</a></nav>
+</aside>
+<main class="main">
+  <div class="content"><h1 id="45-3">第一章：爬虫基础概念（45分钟 · 3节课）</h1><div class="toc-inline"><b>本章节目录：</b><br><a href="#1">第1课：什么是网络爬虫</a><a href="#2python">第2课：Python爬虫技术架构</a><a href="#3http">第3课：HTTP协议基础</a></div>
+<p><strong>本章目标</strong>：建立对爬虫的整体认知——什么是爬虫、爬虫程序由哪些部分组成、网页数据是怎么通过网络传输到你电脑上的。本章以概念为主，代码量小，但它是后面所有章节的「地图」。</p>
+<hr />
+<h2 id="1">第1课：什么是网络爬虫</h2>
+<h3 id="11">1.1 从一个生活场景说起</h3>
+<p>假设老师让你整理「过去一个月某新闻网站所有标题」，你有两种做法：</p>
+<ul>
+<li><strong>人工做法</strong>：打开网站 → 复制标题 → 粘贴到 Excel → 翻页 → 重复几百次。可能需要一整天。</li>
+<li><strong>爬虫做法</strong>：写一段几十行的 Python 程序，让它自动完成「打开网页 → 读取标题 → 写入文件 → 自动翻页」。可能只需要几分钟。</li>
+</ul>
+<p><strong>网络爬虫（Web Crawler / Spider）</strong>，就是一种按照一定规则，<strong>自动抓取互联网信息的程序</strong>。它模拟浏览器访问网页，把网页内容下载下来，再从中提取我们需要的数据。</p>
+<h3 id="12">1.2 爬虫能做什么</h3>
+<table>
+<thead>
+<tr>
+<th>应用场景</th>
+<th>具体例子</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>数据采集</td>
+<td>电商商品价格监控、招聘网站职位汇总</td>
+</tr>
+<tr>
+<td>数据分析</td>
+<td>抓取新闻/评论做舆情分析、行业报告</td>
+</tr>
+<tr>
+<td>内容聚合</td>
+<td>搜索引擎（百度、Google 的核心就是巨型爬虫）</td>
+</tr>
+<tr>
+<td>自动化</td>
+<td>自动签到、自动监控网页更新并提醒</td>
+</tr>
+</tbody>
+</table>
+<h3 id="13">1.3 爬虫的基本工作流程</h3>
+<p>所有爬虫，无论简单还是复杂，都遵循同一个四步流程：</p>
+<div class="codehilite"><pre><span></span><code>┌────────────┐    ┌────────────┐    ┌────────────┐    ┌────────────┐
+│ 1.发送请求  │ →  │ 2.获取响应  │ →  │ 3.解析数据  │ →  │ 4.存储数据  │
+│ (requests) │    │ (网页HTML) │    │(BS4/正则)  │    │(文件/数据库)│
+└────────────┘    └────────────┘    └────────────┘    └────────────┘
+</code></pre></div>
+
+<p>对照课程章节看，你会发现整个课程就是沿着这条主线展开的：</p>
+<ul>
+<li>第二、三章（requests / urllib）解决 <strong>第 1、2 步</strong>；</li>
+<li>第四、五章（BeautifulSoup / 正则表达式）解决 <strong>第 3 步</strong>；</li>
+<li>第六章实战把 <strong>第 4 步</strong> 和全流程串起来。</li>
+</ul>
+<h3 id="14">1.4 你的第一个爬虫程序</h3>
+<p>先感受一下完整流程。下面这段代码只有 7 行，却能抓取一个网页的标题（先不用理解细节，后面章节会逐一拆解）：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">bs4</span><span class="w"> </span><span class="kn">import</span> <span class="n">BeautifulSoup</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s1">&#39;https://example.com&#39;</span>          <span class="c1"># 1. 目标网址</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>         <span class="c1"># 2. 发送请求，获取网页内容</span>
+<span class="n">soup</span> <span class="o">=</span> <span class="n">BeautifulSoup</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">,</span> <span class="s1">&#39;lxml&#39;</span><span class="p">)</span>  <span class="c1"># 3. 解析HTML</span>
+<span class="n">title</span> <span class="o">=</span> <span class="n">soup</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;title&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">get_text</span><span class="p">()</span>        <span class="c1"># 4. 提取标题文字</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;网页标题: </span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<p>运行结果类似：</p>
+<div class="codehilite"><pre><span></span><code>网页标题: Example Domain
+</code></pre></div>
+
+<h3 id="_1">📝 本课练习</h3>
+<ol>
+<li>用自己的话向朋友解释「爬虫是什么」，不超过 3 句话。</li>
+<li>想一想：你日常工作中有没有「重复复制粘贴网页内容」的场景？它能否用爬虫四步流程描述出来？</li>
+<li>（选做）安装好 requests 和 beautifulsoup4 后，运行上面的示例代码，观察输出结果。</li>
+</ol>
+<hr />
+<h2 id="2python">第2课：Python爬虫技术架构</h2>
+<h3 id="21">2.1 一个爬虫程序的四大模块</h3>
+<p>专业的爬虫程序通常由四个模块组成，本课程先掌握前三个，第四个了解即可：</p>
+<p><strong>① 请求模块（下载器）</strong>
+负责和网站服务器「对话」：把请求发出去，把网页内容收回来。
+- 本课程主力工具：<code>requests</code>（第三方库，简单易用，第二章）
+- 备选工具：<code>urllib</code>（Python 自带，无需安装，第三章）</p>
+<p><strong>② 解析模块（解析器）</strong>
+下载回来的网页是一整坨 HTML 文本，解析模块负责像「剪刀」一样把需要的数据剪出来。
+- <code>BeautifulSoup</code>：把 HTML 变成可操作的对象树（第四章）
+- <code>re 正则表达式</code>：用模式匹配直接从文本中捞出数据（第五章）</p>
+<p><strong>③ 数据存储模块</strong>
+提取出来的数据要落地保存：TXT/CSV 文件、Excel、数据库（MySQL、MongoDB）等（第六章实战会用到文件存储）。</p>
+<p><strong>④ 调度模块（了解）</strong>
+控制「先爬哪个页面、再爬哪个页面、爬多快、失败了重试」。大型框架如 Scrapy 内置了调度器，本课程用手动循环实现简单调度。</p>
+<h3 id="22-python">2.2 为什么是 Python</h3>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>Python</th>
+<th>其他语言常见情况</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>上手难度</td>
+<td>语法接近英语，初学者友好</td>
+<td>Java/Go 配置和语法更繁琐</td>
+</tr>
+<tr>
+<td>爬虫库生态</td>
+<td>requests、BS4、lxml、Scrapy 非常成熟</td>
+<td>多数语言生态较弱</td>
+</tr>
+<tr>
+<td>数据处理衔接</td>
+<td>爬完可直接用 pandas 分析</td>
+<td>需要额外导出转换</td>
+</tr>
+<tr>
+<td>学习资料</td>
+<td>中文教程极多</td>
+<td>相对少</td>
+</tr>
+</tbody>
+</table>
+<h3 id="23">2.3 同步与并发（概念了解）</h3>
+<ul>
+<li><strong>同步爬取</strong>：爬完一个页面再爬下一个。简单但慢，本课程入门阶段使用。</li>
+<li><strong>并发爬取</strong>：同时爬多个页面（多线程/协程）。速度快几十倍，是进阶内容。</li>
+</ul>
+<p>入门阶段记住一句话：<strong>先把「能跑」写出来，再考虑「跑得快」</strong>。</p>
+<h3 id="_2">📝 本课练习</h3>
+<ol>
+<li>画出爬虫四大模块的关系图，并标注每个模块在本课程中对应的工具。</li>
+<li>思考：如果一个爬虫程序漏掉了「解析模块」，直接保存整个网页 HTML，会有什么后果？</li>
+</ol>
+<hr />
+<h2 id="3http">第3课：HTTP协议基础</h2>
+<p>这是全课程<strong>最重要的一节概念课</strong>。爬虫的本质就是「代替浏览器发 HTTP 请求」，不懂 HTTP，后面遇到反爬、登录、乱码都会一头雾水。</p>
+<h3 id="31">3.1 浏览器访问网页时发生了什么</h3>
+<p>当你在浏览器输入网址按下回车，实际发生了一次「一问一答」：</p>
+<div class="codehilite"><pre><span></span><code>你的电脑（客户端）                网站服务器
+      │                                │
+      │ ──── HTTP 请求(Request) ────▶  │   「我要 https://example.com 这个页面」
+      │                                │
+      │ ◀─── HTTP 响应(Response) ────  │   「给你，这是网页的HTML内容」
+      │                                │
+</code></pre></div>
+
+<p>爬虫程序就是<strong>用代码模拟左边这个角色</strong>：自己构造请求发出去，再接收并处理响应。</p>
+<h3 id="32-url">3.2 URL 的结构</h3>
+<p>URL（网址）是请求的目标地址，拆开看：</p>
+<div class="codehilite"><pre><span></span><code>https://www.example.com:443/path/to/page?id=100&amp;page=2#top
+└─┬─┘   └──────┬──────┘└┬┘└──────┬─────┘└──────┬──────┘└┬┘
+ 协议         域名      端口      路径          查询参数   锚点
+</code></pre></div>
+
+<p>爬虫最常打交道的是<strong>查询参数</strong>（<code>?</code> 后面的部分）。很多网站的翻页就是改参数：<code>page=1</code>、<code>page=2</code>、<code>page=3</code>……掌握这一点，就掌握了「自动翻页」的钥匙。</p>
+<h3 id="33-request">3.3 请求（Request）的组成</h3>
+<p>一次 HTTP 请求包含：</p>
+<ol>
+<li><strong>请求方法</strong>：最常见两种</li>
+<li><code>GET</code>：向服务器<strong>要</strong>数据（打开网页、搜索）</li>
+<li><code>POST</code>：向服务器<strong>提交</strong>数据（登录、提交表单）</li>
+<li><strong>请求头（Headers）</strong>：附加信息，其中最重要的是：</li>
+<li><code>User-Agent</code>：告诉服务器「我是谁」（什么浏览器、什么系统）。很多网站会拒绝没有 User-Agent 的「裸奔」请求，所以爬虫通常要伪装它。</li>
+<li><code>Cookie</code>：登录状态的「通行证」</li>
+<li><code>Referer</code>：从哪个页面跳转过来的</li>
+<li><strong>请求体（Body）</strong>：POST 请求携带的数据，GET 请求一般没有。</li>
+</ol>
+<h3 id="34-response">3.4 响应（Response）的组成</h3>
+<p>服务器返回的内容包含：</p>
+<ol>
+<li><strong>状态码</strong>：本次请求的结果，常见状态码务必背下来：</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>状态码</th>
+<th>含义</th>
+<th>爬虫视角的解读</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>200</td>
+<td>成功</td>
+<td>一切正常，拿到数据了</td>
+</tr>
+<tr>
+<td>301/302</td>
+<td>重定向</td>
+<td>网址搬家了，requests 会自动跟过去</td>
+</tr>
+<tr>
+<td>403</td>
+<td>禁止访问</td>
+<td>被网站识别并拒绝了，检查 User-Agent</td>
+</tr>
+<tr>
+<td>404</td>
+<td>页面不存在</td>
+<td>网址错了或页面已删除</td>
+</tr>
+<tr>
+<td>500</td>
+<td>服务器错误</td>
+<td>网站自己出问题了，稍后再试</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>响应头</strong>：服务器的信息（内容类型、编码等）。</li>
+<li><strong>响应体</strong>：真正的内容——HTML 源码、JSON 数据、图片二进制等。</li>
+</ol>
+<h3 id="35-http">3.5 用浏览器「偷看」HTTP 请求</h3>
+<p>一个必须掌握的技能——<strong>开发者工具</strong>：</p>
+<ol>
+<li>用 Chrome/Edge 打开任意网页；</li>
+<li>按 <code>F12</code> 打开开发者工具，切换到 <strong>Network（网络）</strong> 面板；</li>
+<li>刷新页面，会看到密密麻麻的请求列表；</li>
+<li>点击第一个请求，就能看到它的 <strong>Headers（请求头/响应头/状态码）</strong> 和 <strong>Response（响应内容）</strong>。</li>
+</ol>
+<p>以后写爬虫前，<strong>先用开发者工具看清楚浏览器发的是什么请求，再用代码照抄</strong>，这是爬虫工程师的日常姿势。</p>
+<h3 id="36">3.6 动手：用代码打印一次完整的请求与响应</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://example.com&#39;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;状态码:&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>          <span class="c1"># 200 表示成功</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;响应头中的内容类型:&#39;</span><span class="p">,</span> <span class="n">response</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;Content-Type&#39;</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;网页前100个字符:&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">100</span><span class="p">])</span>
+</code></pre></div>
+
+<h3 id="_3">📝 本课练习</h3>
+<ol>
+<li>打开任意一个你常逛的网站，用 F12 找到第一个请求，记录它的请求方法、状态码和 User-Agent。</li>
+<li>把 <code>https://example.com/page?id=5&amp;sort=new#list</code> 拆成协议、域名、路径、查询参数、锚点五部分。</li>
+<li>解释：为什么爬虫请求经常要加 <code>User-Agent</code>？不加可能会收到什么状态码？</li>
+</ol>
+<hr /></div>
+  <div class="pager"><a href="prep.html"><span class="dir">← 上一篇</span>课前准备</a><a href="ch2.html" class="next"><span class="dir">下一篇 →</span>第二章：requests库详解</a></div>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第二章：requests库详解 - Python爬虫入门到实战</title>
+<style>
+:root{--bg:#0f0f0f;--bg2:#1a1a1a;--card:#1a1a2e;--card2:#16213e;--line:rgba(255,255,255,.08);
+--txt:#e8e8e8;--muted:#9aa0a6;--c1:#00a1d6;--c2:#5856d6;--accent:#00c3ff;--orange:#ff6b35}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
+background:var(--bg);color:var(--txt);line-height:1.8}
+a{color:var(--accent);text-decoration:none}
+.layout{display:flex;min-height:100vh}
+.sidebar{width:280px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--line);
+padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar .brand{font-size:18px;font-weight:700;margin-bottom:6px;
+background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;
+-webkit-text-fill-color:transparent}
+.sidebar .brand-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+.sidebar nav a{display:block;padding:9px 14px;border-radius:10px;color:var(--txt);font-size:14px;margin-bottom:4px;transition:.2s}
+.sidebar nav a:hover{background:rgba(255,255,255,.06)}
+.sidebar nav a.active{background:linear-gradient(90deg,rgba(0,161,214,.25),rgba(88,86,214,.25));color:#fff;font-weight:600}
+.sidebar nav a .num{display:inline-block;width:22px;color:var(--accent);font-weight:700}
+.main{flex:1;min-width:0;padding:48px 56px;max-width:980px}
+.content h1{font-size:30px;margin:0 0 24px;padding-bottom:16px;border-bottom:1px solid var(--line);
+background:linear-gradient(90deg,#fff,#a0aec0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.content h2{font-size:23px;margin:40px 0 16px;color:#fff;padding-left:12px;border-left:4px solid var(--c1)}
+.content h3{font-size:18px;margin:28px 0 12px;color:var(--accent)}
+.content p{margin:12px 0}
+.content ul,.content ol{margin:12px 0 12px 24px}
+.content li{margin:6px 0}
+.content strong{color:#fff}
+.content blockquote{margin:16px 0;padding:14px 18px;background:linear-gradient(135deg,var(--card),var(--card2));
+border-left:4px solid var(--c2);border-radius:0 12px 12px 0;color:var(--muted)}
+.content table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;display:block;overflow-x:auto}
+.content th,.content td{border:1px solid var(--line);padding:9px 14px;text-align:left;white-space:nowrap}
+.content th{background:linear-gradient(90deg,rgba(0,161,214,.2),rgba(88,86,214,.2));color:#fff}
+.content tr:nth-child(even){background:rgba(255,255,255,.02)}
+.content code{font-family:'JetBrains Mono',Consolas,Monaco,monospace;font-size:.92em;
+background:rgba(0,161,214,.12);color:#7dd3fc;padding:2px 7px;border-radius:6px}
+.content pre{margin:16px 0;border-radius:14px;overflow-x:auto;border:1px solid var(--line)}
+.content pre code{display:block;padding:18px 20px;background:#0d1117;color:#e6edf3;font-size:13.5px;line-height:1.7}
+.codehilite{background:#0d1117;border-radius:14px}
+.codehilite pre{margin:0;border:none}
+.pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+.pager a{flex:1;max-width:48%;padding:14px 20px;background:linear-gradient(135deg,var(--card),var(--card2));
+border:1px solid var(--line);border-radius:14px;color:var(--txt);transition:.25s}
+.pager a:hover{border-color:var(--c1);transform:translateY(-2px)}
+.pager .dir{font-size:12px;color:var(--muted);display:block}
+.pager .next{text-align:right;margin-left:auto}
+.toc-inline{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--line);
+border-radius:14px;padding:18px 22px;margin:20px 0 28px;font-size:14px}
+.toc-inline b{color:#fff}
+.toc-inline a{margin-right:16px;white-space:nowrap}
+.hero{background:linear-gradient(135deg,var(--c1) 0%,#00c3ff 50%,var(--c2) 100%);border-radius:20px;
+padding:40px 36px;margin-bottom:28px}
+.hero h1{-webkit-text-fill-color:#fff !important;border:none;padding:0;margin:0 0 10px !important;font-size:32px !important}
+.hero p{color:rgba(255,255,255,.92);margin:0}
+.menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:99;background:var(--card);color:#fff;
+border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:15px;cursor:pointer}
+@media(max-width:900px){
+.sidebar{position:fixed;left:-300px;transition:.3s;z-index:98;height:100vh}
+.sidebar.open{left:0}
+.main{padding:64px 22px}
+.menu-btn{display:block}}
+pre { line-height: 125%; }
+td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+span.linenos { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
+td.linenos .special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 5px; padding-right: 5px; }
+.codehilite .hll { background-color: #49483e }
+.codehilite { background: #272822; color: #F8F8F2 }
+.codehilite .c { color: #959077 } /* Comment */
+.codehilite .err { color: #ED007E; background-color: #1E0010 } /* Error */
+.codehilite .esc { color: #F8F8F2 } /* Escape */
+.codehilite .g { color: #F8F8F2 } /* Generic */
+.codehilite .k { color: #66D9EF } /* Keyword */
+.codehilite .l { color: #AE81FF } /* Literal */
+.codehilite .n { color: #F8F8F2 } /* Name */
+.codehilite .o { color: #FF4689 } /* Operator */
+.codehilite .x { color: #F8F8F2 } /* Other */
+.codehilite .p { color: #F8F8F2 } /* Punctuation */
+.codehilite .ch { color: #959077 } /* Comment.Hashbang */
+.codehilite .cm { color: #959077 } /* Comment.Multiline */
+.codehilite .cp { color: #959077 } /* Comment.Preproc */
+.codehilite .cpf { color: #959077 } /* Comment.PreprocFile */
+.codehilite .c1 { color: #959077 } /* Comment.Single */
+.codehilite .cs { color: #959077 } /* Comment.Special */
+.codehilite .gd { color: #FF4689 } /* Generic.Deleted */
+.codehilite .ge { color: #F8F8F2; font-style: italic } /* Generic.Emph */
+.codehilite .ges { color: #F8F8F2; font-weight: bold; font-style: italic } /* Generic.EmphStrong */
+.codehilite .gr { color: #F8F8F2 } /* Generic.Error */
+.codehilite .gh { color: #F8F8F2 } /* Generic.Heading */
+.codehilite .gi { color: #A6E22E } /* Generic.Inserted */
+.codehilite .go { color: #66D9EF } /* Generic.Output */
+.codehilite .gp { color: #FF4689; font-weight: bold } /* Generic.Prompt */
+.codehilite .gs { color: #F8F8F2; font-weight: bold } /* Generic.Strong */
+.codehilite .gu { color: #959077 } /* Generic.Subheading */
+.codehilite .gt { color: #F8F8F2 } /* Generic.Traceback */
+.codehilite .kc { color: #66D9EF } /* Keyword.Constant */
+.codehilite .kd { color: #66D9EF } /* Keyword.Declaration */
+.codehilite .kn { color: #FF4689 } /* Keyword.Namespace */
+.codehilite .kp { color: #66D9EF } /* Keyword.Pseudo */
+.codehilite .kr { color: #66D9EF } /* Keyword.Reserved */
+.codehilite .kt { color: #66D9EF } /* Keyword.Type */
+.codehilite .ld { color: #E6DB74 } /* Literal.Date */
+.codehilite .m { color: #AE81FF } /* Literal.Number */
+.codehilite .s { color: #E6DB74 } /* Literal.String */
+.codehilite .na { color: #A6E22E } /* Name.Attribute */
+.codehilite .nb { color: #F8F8F2 } /* Name.Builtin */
+.codehilite .nc { color: #A6E22E } /* Name.Class */
+.codehilite .no { color: #66D9EF } /* Name.Constant */
+.codehilite .nd { color: #A6E22E } /* Name.Decorator */
+.codehilite .ni { color: #F8F8F2 } /* Name.Entity */
+.codehilite .ne { color: #A6E22E } /* Name.Exception */
+.codehilite .nf { color: #A6E22E } /* Name.Function */
+.codehilite .nl { color: #F8F8F2 } /* Name.Label */
+.codehilite .nn { color: #F8F8F2 } /* Name.Namespace */
+.codehilite .nx { color: #A6E22E } /* Name.Other */
+.codehilite .py { color: #F8F8F2 } /* Name.Property */
+.codehilite .nt { color: #FF4689 } /* Name.Tag */
+.codehilite .nv { color: #F8F8F2 } /* Name.Variable */
+.codehilite .ow { color: #FF4689 } /* Operator.Word */
+.codehilite .pm { color: #F8F8F2 } /* Punctuation.Marker */
+.codehilite .w { color: #F8F8F2 } /* Text.Whitespace */
+.codehilite .mb { color: #AE81FF } /* Literal.Number.Bin */
+.codehilite .mf { color: #AE81FF } /* Literal.Number.Float */
+.codehilite .mh { color: #AE81FF } /* Literal.Number.Hex */
+.codehilite .mi { color: #AE81FF } /* Literal.Number.Integer */
+.codehilite .mo { color: #AE81FF } /* Literal.Number.Oct */
+.codehilite .sa { color: #E6DB74 } /* Literal.String.Affix */
+.codehilite .sb { color: #E6DB74 } /* Literal.String.Backtick */
+.codehilite .sc { color: #E6DB74 } /* Literal.String.Char */
+.codehilite .dl { color: #E6DB74 } /* Literal.String.Delimiter */
+.codehilite .sd { color: #E6DB74 } /* Literal.String.Doc */
+.codehilite .s2 { color: #E6DB74 } /* Literal.String.Double */
+.codehilite .se { color: #AE81FF } /* Literal.String.Escape */
+.codehilite .sh { color: #E6DB74 } /* Literal.String.Heredoc */
+.codehilite .si { color: #E6DB74 } /* Literal.String.Interpol */
+.codehilite .sx { color: #E6DB74 } /* Literal.String.Other */
+.codehilite .sr { color: #E6DB74 } /* Literal.String.Regex */
+.codehilite .s1 { color: #E6DB74 } /* Literal.String.Single */
+.codehilite .ss { color: #E6DB74 } /* Literal.String.Symbol */
+.codehilite .bp { color: #F8F8F2 } /* Name.Builtin.Pseudo */
+.codehilite .fm { color: #A6E22E } /* Name.Function.Magic */
+.codehilite .vc { color: #F8F8F2 } /* Name.Variable.Class */
+.codehilite .vg { color: #F8F8F2 } /* Name.Variable.Global */
+.codehilite .vi { color: #F8F8F2 } /* Name.Variable.Instance */
+.codehilite .vm { color: #F8F8F2 } /* Name.Variable.Magic */
+.codehilite .il { color: #AE81FF } /* Literal.Number.Integer.Long */</style>
+</head>
+<body>
+<button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ 目录</button>
+<div class="layout">
+<aside class="sidebar">
+  <div class="brand">Python爬虫入门到实战</div>
+  <div class="brand-sub">新手引导课程 · 完整讲义</div>
+  <nav><a href="index.html" class="">课程导读</a><a href="prep.html" class="">课前准备</a><a href="ch1.html" class="">第一章：爬虫基础概念</a><a href="ch2.html" class="active">第二章：requests库详解</a><a href="ch3.html" class="">第三章：urllib库详解</a><a href="ch4.html" class="">第四章：BeautifulSoup解析</a><a href="ch5.html" class="">第五章：正则表达式</a><a href="ch6.html" class="">第六章：实战项目</a><a href="appendix.html" class="">总结与FAQ</a></nav>
+</aside>
+<main class="main">
+  <div class="content"><h1 id="requests130-4">第二章：requests库详解（1小时30分钟 · 4节课）</h1><div class="toc-inline"><b>本章节目录：</b><br><a href="#4get">第4课：GET请求与参数传递</a><a href="#5post">第5课：POST请求与表单提交</a><a href="#6">第6课：请求头设置与身份伪装</a><a href="#7cookiesession">第7课：Cookie与Session会话管理</a></div>
+<p><strong>本章目标</strong>：熟练使用 Python 最流行的 HTTP 库 requests，掌握 GET/POST 请求、请求头伪装、Cookie 与 Session 会话管理，能应对 80% 的日常抓取需求。</p>
+<blockquote>
+<p>requests 是第三方库，先确认已安装：<code>pip install requests</code></p>
+</blockquote>
+<hr />
+<h2 id="4get">第4课：GET请求与参数传递</h2>
+<h3 id="41-get">4.1 最基本的 GET 请求</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/get&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>   <span class="c1"># 状态码</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>          <span class="c1"># 响应内容（字符串）</span>
+</code></pre></div>
+
+<blockquote>
+<p>📌 <code>httpbin.org</code> 是一个专门用于测试 HTTP 请求的演示网站，它会把你发送的请求信息原样返回，非常适合练习。如果网络环境无法访问，可以把示例中的地址换成任意可访问的网站，学习方法不变。</p>
+</blockquote>
+<h3 id="42-response">4.2 Response 对象的常用属性</h3>
+<table>
+<thead>
+<tr>
+<th>属性/方法</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>response.status_code</code></td>
+<td>状态码，如 200</td>
+</tr>
+<tr>
+<td><code>response.text</code></td>
+<td>响应内容（自动解码为字符串）</td>
+</tr>
+<tr>
+<td><code>response.content</code></td>
+<td>响应内容（<strong>二进制</strong>，下载图片/文件用它）</td>
+</tr>
+<tr>
+<td><code>response.headers</code></td>
+<td>响应头（字典）</td>
+</tr>
+<tr>
+<td><code>response.url</code></td>
+<td>最终实际访问的网址（重定向后会变）</td>
+</tr>
+<tr>
+<td><code>response.json()</code></td>
+<td>当返回的是 JSON 数据时，直接转成 Python 字典</td>
+</tr>
+</tbody>
+</table>
+<p><code>.text</code> 和 <code>.content</code> 的区别是高频考点：</p>
+<ul>
+<li>抓<strong>网页源码</strong> → 用 <code>.text</code>（字符串，方便解析）</li>
+<li>下载<strong>图片、视频、文件</strong> → 用 <code>.content</code>（二进制，直接写文件）</li>
+</ul>
+<h3 id="43-params">4.3 携带查询参数：params</h3>
+<p>想搜索或翻页时，不要手动拼接 URL，用 <code>params</code> 参数更安全优雅：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="c1"># 等价于访问 https://httpbin.org/get?keyword=python&amp;page=2</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;keyword&#39;</span><span class="p">:</span> <span class="s1">&#39;python&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;page&#39;</span><span class="p">:</span> <span class="mi">2</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/get&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">url</span><span class="p">)</span>  <span class="c1"># 查看最终拼接好的网址</span>
+</code></pre></div>
+
+<p>为什么推荐 <code>params</code> 而不是自己拼字符串？</p>
+<ol>
+<li>参数中的中文、空格、<code>&amp;</code> 等符号会被<strong>自动编码</strong>，手动拼接容易出错；</li>
+<li>代码更清晰，改参数只改字典。</li>
+</ol>
+<h3 id="44-json">4.4 处理 JSON 数据</h3>
+<p>很多现代网站的数据接口直接返回 JSON（一种结构化的数据格式），requests 可以一键转成 Python 字典：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/get&#39;</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;小明&#39;</span><span class="p">})</span>
+<span class="n">data</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>          <span class="c1"># JSON → Python 字典</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>               <span class="c1"># &lt;class &#39;dict&#39;&gt;</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;args&#39;</span><span class="p">])</span>             <span class="c1"># 取出参数部分：{&#39;name&#39;: &#39;小明&#39;}</span>
+</code></pre></div>
+
+<p><strong>判断标准</strong>：如果 <code>response.text</code> 开头是 <code>{"...</code> 或 <code>[{...</code>，基本是 JSON，用 <code>.json()</code>；如果开头是 <code>&lt;!DOCTYPE html&gt;</code> 或 <code>&lt;html</code>，是网页源码，用第四章的 BeautifulSoup 解析。</p>
+<h3 id="45">4.5 设置超时时间</h3>
+<p>网站可能卡顿或无响应，<strong>一定要给请求加超时</strong>，否则程序会永远傻等：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="k">try</span><span class="p">:</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/get&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>  <span class="c1"># 最多等5秒</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">Timeout</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;请求超时，跳过这个网址&#39;</span><span class="p">)</span>
+<span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;请求出错: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="_1">📝 本课练习</h3>
+<ol>
+<li>用 <code>params</code> 构造一个请求，模拟在搜索引擎搜索「Python 教程」，打印最终 URL。</li>
+<li>写代码请求一个接口，判断状态码是否为 200，是则打印内容，否则打印「请求失败，状态码：xxx」。</li>
+<li>下载一张网络图片（如 <code>https://httpbin.org/image/png</code>），思考应该用 <code>.text</code> 还是 <code>.content</code>，并说出理由。</li>
+</ol>
+<hr />
+<h2 id="5post">第5课：POST请求与表单提交</h2>
+<h3 id="51-get-post">5.1 GET 与 POST 的区别</h3>
+<table>
+<thead>
+<tr>
+<th>对比项</th>
+<th>GET</th>
+<th>POST</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>用途</td>
+<td>获取数据</td>
+<td>提交数据</td>
+</tr>
+<tr>
+<td>参数位置</td>
+<td>拼在 URL 里（看得见）</td>
+<td>放在请求体里（URL 里看不见）</td>
+</tr>
+<tr>
+<td>典型场景</td>
+<td>打开网页、搜索、翻页</td>
+<td>登录、注册、发表评论、上传文件</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-post-data">5.2 发送 POST 请求：data</h3>
+<p>模拟表单提交，用 <code>data</code> 参数传递字典：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;xiaoming&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;123456&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/post&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;form&#39;</span><span class="p">])</span>   <span class="c1"># {&#39;username&#39;: &#39;xiaoming&#39;, &#39;password&#39;: &#39;123456&#39;}</span>
+</code></pre></div>
+
+<h3 id="53-json-post">5.3 发送 JSON 格式的 POST 数据</h3>
+<p>有些接口要求提交 JSON 而不是表单，用 <code>json</code> 参数：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">payload</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;小明&#39;</span><span class="p">,</span> <span class="s1">&#39;age&#39;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span> <span class="s1">&#39;hobbies&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;篮球&#39;</span><span class="p">,</span> <span class="s1">&#39;编程&#39;</span><span class="p">]}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/post&#39;</span><span class="p">,</span> <span class="n">json</span><span class="o">=</span><span class="n">payload</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()[</span><span class="s1">&#39;json&#39;</span><span class="p">])</span>   <span class="c1"># 服务器收到的 JSON 数据</span>
+</code></pre></div>
+
+<p><strong><code>data</code> vs <code>json</code> 怎么选？</strong> 打开 F12 开发者工具看真实浏览器请求：请求体是 <code>username=xx&amp;password=xx</code> 形式用 <code>data</code>；是 <code>{"username":"xx"}</code> 形式用 <code>json</code>。</p>
+<h3 id="54">5.4 实战思路：模拟登录的一般套路</h3>
+<p>模拟登录是 POST 最典型的应用，通用思路：</p>
+<ol>
+<li>在浏览器手动登录一次，用 F12 抓包，找到登录请求（通常是 POST）；</li>
+<li>记录它的 URL、请求参数（账号、密码字段名，可能还有验证码/token）；</li>
+<li>用 <code>requests.post()</code> 照抄参数发送；</li>
+<li>登录成功后保存 Cookie（下一课详讲），后续请求都带着它。</li>
+</ol>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">login_url</span> <span class="o">=</span> <span class="s1">&#39;https://httpbin.org/post&#39;</span>  <span class="c1"># 实际项目换成真实登录接口</span>
+<span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;my_account&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;my_password&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">login_url</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">response</span><span class="o">.</span><span class="n">status_code</span> <span class="o">==</span> <span class="mi">200</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;登录请求发送成功，检查返回内容判断是否登录成功&#39;</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="_2">📝 本课练习</h3>
+<ol>
+<li>向 <code>https://httpbin.org/post</code> 分别用 <code>data</code> 和 <code>json</code> 各发一次 POST 请求，对比返回结果中 <code>form</code> 和 <code>json</code> 字段的差异。</li>
+<li>找一个你常用的网站，用 F12 观察它的登录请求是 POST 还是 GET？参数有哪些字段？（只观察，不要真的提交）</li>
+</ol>
+<hr />
+<h2 id="6">第6课：请求头设置与身份伪装</h2>
+<h3 id="61">6.1 为什么需要伪装</h3>
+<p>很多网站有「反爬虫」机制：检查请求的 <code>User-Agent</code>。Python 的 requests 默认 User-Agent 是 <code>python-requests/2.x.x</code>，等于脑门上贴着「我是机器人」，很容易被 403 拒绝。</p>
+<p><strong>对策：把请求头伪装成真实浏览器。</strong></p>
+<h3 id="62-user-agent">6.2 设置 User-Agent</h3>
+<p>先去 F12 复制自己浏览器的 User-Agent，然后放进 <code>headers</code> 字典：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) &#39;</span>
+                  <span class="s1">&#39;AppleWebKit/537.36 (KHTML, like Gecko) &#39;</span>
+                  <span class="s1">&#39;Chrome/120.0.0.0 Safari/537.36&#39;</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/headers&#39;</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>   <span class="c1"># 可以看到服务器收到的 User-Agent 已经变成浏览器的了</span>
+</code></pre></div>
+
+<blockquote>
+<p>技巧：<code>https://httpbin.org/headers</code> 会原样返回你发送的请求头，是验证伪装是否成功的好工具。</p>
+</blockquote>
+<h3 id="63">6.3 常用请求头字段</h3>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>作用</th>
+<th>什么时候需要加</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>User-Agent</code></td>
+<td>声明浏览器身份</td>
+<td><strong>几乎每次都要</strong></td>
+</tr>
+<tr>
+<td><code>Referer</code></td>
+<td>声明来源页面</td>
+<td>防盗链的图片/视频下载</td>
+</tr>
+<tr>
+<td><code>Cookie</code></td>
+<td>登录凭证</td>
+<td>需要登录才能看的页面</td>
+</tr>
+<tr>
+<td><code>Accept-Language</code></td>
+<td>语言偏好</td>
+<td>避免返回英文版页面</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Referer&#39;</span><span class="p">:</span> <span class="s1">&#39;https://www.example.com/&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;Accept-Language&#39;</span><span class="p">:</span> <span class="s1">&#39;zh-CN,zh;q=0.9&#39;</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="64">6.4 一个带完整伪装的请求模板</h3>
+<p>建议把下面这段代码存为自己的「爬虫起手模板」：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fetch</span><span class="p">(</span><span class="n">url</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;带伪装和异常处理的通用请求函数&quot;&quot;&quot;</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) &#39;</span>
+                      <span class="s1">&#39;AppleWebKit/537.36 (KHTML, like Gecko) &#39;</span>
+                      <span class="s1">&#39;Chrome/120.0.0.0 Safari/537.36&#39;</span>
+    <span class="p">}</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+        <span class="n">response</span><span class="o">.</span><span class="n">raise_for_status</span><span class="p">()</span>   <span class="c1"># 状态码不是2xx时主动抛异常</span>
+        <span class="k">return</span> <span class="n">response</span>
+    <span class="k">except</span> <span class="n">requests</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">RequestException</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;抓取失败 </span><span class="si">{</span><span class="n">url</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="kc">None</span>
+
+<span class="n">resp</span> <span class="o">=</span> <span class="n">fetch</span><span class="p">(</span><span class="s1">&#39;https://example.com&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">resp</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">resp</span><span class="o">.</span><span class="n">text</span><span class="p">[:</span><span class="mi">200</span><span class="p">])</span>
+</code></pre></div>
+
+<blockquote>
+<p><code>response.raise_for_status()</code> 是好习惯：状态码 4xx/5xx 时直接报错，避免拿着错误页面去解析，排查半天才发现根本没抓到数据。</p>
+</blockquote>
+<h3 id="_3">📝 本课练习</h3>
+<ol>
+<li>从 F12 复制你自己浏览器的 User-Agent，请求 <code>https://httpbin.org/headers</code> 验证伪装效果。</li>
+<li>对比实验：不加 User-Agent 和加 User-Agent 分别请求同一个页面，观察返回内容或状态码的差异。</li>
+</ol>
+<hr />
+<h2 id="7cookiesession">第7课：Cookie与Session会话管理</h2>
+<h3 id="71-cookie">7.1 为什么需要 Cookie</h3>
+<p>HTTP 协议本身是「健忘」的：服务器默认不记得你上一次请求是谁。登录成功后，服务器会发给你一个 <strong>Cookie</strong>（一小段身份凭证），之后你每次请求都带上它，服务器就知道「哦，是刚才登录过的那位」。</p>
+<p><strong>爬虫要抓取「登录后才能看」的内容，就必须正确处理 Cookie。</strong></p>
+<h3 id="72-cookie">7.2 从响应中读取 Cookie</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/cookies/set/name/xiaoming&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">cookies</span><span class="p">)</span>              <span class="c1"># CookieJar 对象</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">cookies</span><span class="p">))</span>        <span class="c1"># 转成字典查看：{&#39;name&#39;: &#39;xiaoming&#39;}</span>
+</code></pre></div>
+
+<h3 id="73-cookie">7.3 手动携带 Cookie 请求</h3>
+<p>适合 Cookie 已经从浏览器复制的场景（F12 → 请求头 → Cookie）：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">headers</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0&#39;</span>
+<span class="p">}</span>
+<span class="n">cookies</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;session_id&#39;</span><span class="p">:</span> <span class="s1">&#39;abc123xyz&#39;</span><span class="p">,</span>   <span class="c1"># 从浏览器复制的登录凭证</span>
+<span class="p">}</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/cookies&#39;</span><span class="p">,</span>
+                        <span class="n">headers</span><span class="o">=</span><span class="n">headers</span><span class="p">,</span> <span class="n">cookies</span><span class="o">=</span><span class="n">cookies</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>
+</code></pre></div>
+
+<h3 id="74-session-cookie">7.4 Session：自动管理 Cookie 的「连续对话」</h3>
+<p>如果一个网站是「先 POST 登录 → 再 GET 个人页面」两步操作，手动传递 Cookie 很麻烦。<strong>Session 对象会自动记住并携带 Cookie</strong>，相当于在代码里开了一个「不会失忆的浏览器」：</p>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="c1"># 创建会话对象</span>
+<span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0&#39;</span>
+<span class="p">})</span>
+
+<span class="c1"># 第1步：登录（服务器返回的 Cookie 会被 session 自动保存）</span>
+<span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/cookies/set/token/my_login_token&#39;</span><span class="p">)</span>
+
+<span class="c1"># 第2步：访问需要登录的页面（session 自动带上上一步的 Cookie）</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/cookies&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">())</span>   <span class="c1"># {&#39;cookies&#39;: {&#39;token&#39;: &#39;my_login_token&#39;}}</span>
+</code></pre></div>
+
+<p><strong>普通 requests 与 Session 的区别</strong>：每次 <code>requests.get()</code> 都是一次「全新访问」，互不认识；<code>session.get()</code> 是「连续对话」，Cookie 自动继承。模拟登录场景一律用 Session。</p>
+<h3 id="75">7.5 本章综合小练习：带登录态的抓取流程</h3>
+<div class="codehilite"><pre><span></span><code><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">Session</span><span class="p">()</span>
+<span class="n">session</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s1">&#39;User-Agent&#39;</span><span class="p">:</span> <span class="s1">&#39;Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0&#39;</span>
+<span class="p">})</span>
+
+<span class="c1"># 1. 登录</span>
+<span class="n">login_resp</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/post&#39;</span><span class="p">,</span>
+                          <span class="n">data</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;username&#39;</span><span class="p">:</span> <span class="s1">&#39;demo&#39;</span><span class="p">,</span> <span class="s1">&#39;password&#39;</span><span class="p">:</span> <span class="s1">&#39;demo123&#39;</span><span class="p">})</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;登录请求状态:&#39;</span><span class="p">,</span> <span class="n">login_resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+
+<span class="c1"># 2. 用同一个 session 继续访问（Cookie 自动携带）</span>
+<span class="n">profile_resp</span> <span class="o">=</span> <span class="n">session</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;https://httpbin.org/get&#39;</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;后续访问状态:&#39;</span><span class="p">,</span> <span class="n">profile_resp</span><span class="o">.</span><span class="n">status_code</span><span class="p">)</span>
+</code></pre></div>
+
+<h3 id="_4">📝 本课练习</h3>
+<ol>
+<li>用自己的话解释：为什么模拟登录必须用 Session 而不是单独的 requests？</li>
+<li>在浏览器登录一个网站后，用 F12 找到请求头里的 Cookie 字段，观察它的格式（<code>key=value; key=value</code>）。</li>
+<li>思考：Cookie 过期了会发生什么？程序应该如何应对？</li>
+</ol>
+<hr /></div>
+  <div class="pager"><a href="ch1.html"><span class="dir">← 上一篇</span>第一章：爬虫基础概念</a><a href="ch3.html" class="next"><span class="dir">下一篇 →</span>第三章：urllib库详解</a></div>
+</main>
+</div>
+</body>
+</html>
