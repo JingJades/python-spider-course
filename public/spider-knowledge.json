@@ -35,7 +35,10 @@
               "title": "合法合规提醒",
               "content": "爬虫需遵守网站robots协议，尊重网站版权，避免对服务器造成压力"
             }
-          ]
+          ],
+          "video_url": "https://github.com/JingJades/python-spider-course/releases/download/video-ch1/chapter1-45min-course-v2.mp4",
+          "start": 0,
+          "end": 877
         },
         {
           "id": "1-2",
@@ -53,7 +56,10 @@
               "title": "URL管理器实现方式",
               "content": "内存方式（简单但数据易丢失）、数据库方式（持久化存储）、缓存数据库方式（高性能）"
             }
-          ]
+          ],
+          "video_url": "https://github.com/JingJades/python-spider-course/releases/download/video-ch1/chapter1-45min-course-v2.mp4",
+          "start": 877,
+          "end": 1650
         },
         {
           "id": "1-3",
@@ -76,7 +82,10 @@
               "title": "请求头重要字段",
               "content": "User-Agent：浏览器标识；Referer：来源页；Cookie：会话信息；Accept：接受类型"
             }
-          ]
+          ],
+          "video_url": "https://github.com/JingJades/python-spider-course/releases/download/video-ch1/chapter1-45min-course-v2.mp4",
+          "start": 1650,
+          "end": 2705
         }
       ]
     },
