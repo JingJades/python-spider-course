@@ -5,64 +5,108 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>第六章：实战项目 - Python爬虫入门到实战</title>
 <style>
-:root{--bg:#0f0f0f;--bg2:#1a1a1a;--card:#1a1a2e;--card2:#16213e;--line:rgba(255,255,255,.08);
---txt:#e8e8e8;--muted:#9aa0a6;--c1:#00a1d6;--c2:#5856d6;--accent:#00c3ff;--orange:#ff6b35}
+:root{--bg:#0b0d12;--bg2:#12151d;--card:#1a1a2e;--card2:#16213e;--line:rgba(255,255,255,.08);
+--txt:#dfe3ea;--muted:#9aa0a6;--c1:#00a1d6;--c2:#5856d6;--accent:#00c3ff;--topbar:56px}
 *{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;
-background:var(--bg);color:var(--txt);line-height:1.8}
+background:var(--bg);color:var(--txt);line-height:1.85}
 a{color:var(--accent);text-decoration:none}
-.layout{display:flex;min-height:100vh}
-.sidebar{width:280px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--line);
-padding:28px 20px;position:sticky;top:0;height:100vh;overflow-y:auto}
-.sidebar .brand{font-size:18px;font-weight:700;margin-bottom:6px;
-background:linear-gradient(90deg,var(--c1),var(--c2));-webkit-background-clip:text;background-clip:text;
--webkit-text-fill-color:transparent}
-.sidebar .brand-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
-.sidebar nav a{display:block;padding:9px 14px;border-radius:10px;color:var(--txt);font-size:14px;margin-bottom:4px;transition:.2s}
-.sidebar nav a:hover{background:rgba(255,255,255,.06)}
-.sidebar nav a.active{background:linear-gradient(90deg,rgba(0,161,214,.25),rgba(88,86,214,.25));color:#fff;font-weight:600}
-.sidebar nav a .num{display:inline-block;width:22px;color:var(--accent);font-weight:700}
-.main{flex:1;min-width:0;padding:48px 56px;max-width:980px}
-.content h1{font-size:30px;margin:0 0 24px;padding-bottom:16px;border-bottom:1px solid var(--line);
+/* ===== 阅读进度条 ===== */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:200;
+background:linear-gradient(90deg,var(--c1),var(--c2));transition:width .1s}
+/* ===== 顶部导航 ===== */
+.topbar{position:fixed;top:0;left:0;right:0;height:var(--topbar);z-index:100;
+display:flex;align-items:center;gap:14px;padding:0 22px;
+background:rgba(11,13,18,.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+.topbar .logo{font-weight:700;font-size:15px;white-space:nowrap;
+background:linear-gradient(90deg,var(--accent),#8b8cf8);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.topbar .logo:hover{opacity:.85}
+.topnav{display:flex;gap:2px;margin:0 auto;overflow-x:auto;scrollbar-width:none}
+.topnav::-webkit-scrollbar{display:none}
+.topnav a{padding:6px 13px;border-radius:8px;font-size:13.5px;color:var(--muted);white-space:nowrap;transition:.2s}
+.topnav a:hover{color:#fff;background:rgba(255,255,255,.07)}
+.topnav a.active{color:#fff;background:linear-gradient(90deg,rgba(0,161,214,.35),rgba(88,86,214,.35))}
+.topbar .back-home{flex-shrink:0;padding:7px 16px;border-radius:18px;font-size:13px;color:#fff;
+background:linear-gradient(90deg,var(--c1),var(--c2));white-space:nowrap;transition:.25s}
+.topbar .back-home:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,161,214,.4)}
+.menu-btn{display:none;background:none;border:1px solid var(--line);color:#fff;
+border-radius:8px;padding:5px 10px;font-size:15px;cursor:pointer}
+/* ===== 布局 ===== */
+.layout{display:flex;padding-top:var(--topbar)}
+.sidebar{width:268px;flex-shrink:0;background:var(--bg2);border-right:1px solid var(--line);
+padding:24px 16px;position:sticky;top:var(--topbar);height:calc(100vh - var(--topbar));overflow-y:auto}
+.sidebar .side-title{font-size:12px;color:var(--muted);letter-spacing:2px;margin:0 12px 12px}
+.sidebar nav a{display:flex;align-items:center;gap:10px;padding:9px 13px;border-radius:10px;
+color:var(--txt);font-size:14px;margin-bottom:3px;transition:.2s}
+.sidebar nav a .dot{width:7px;height:7px;border-radius:50%;background:#3a3f4d;flex-shrink:0;transition:.2s}
+.sidebar nav a:hover{background:rgba(255,255,255,.05)}
+.sidebar nav a:hover .dot{background:var(--accent)}
+.sidebar nav a.active{background:linear-gradient(90deg,rgba(0,161,214,.22),rgba(88,86,214,.22));color:#fff;font-weight:600}
+.sidebar nav a.active .dot{background:var(--accent);box-shadow:0 0 8px var(--accent)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:89}
+.main{flex:1;min-width:0}
+.article{max-width:860px;margin:0 auto;padding:42px 44px 70px}
+/* ===== 正文排版 ===== */
+.content h1{font-size:29px;margin:0 0 22px;padding-bottom:16px;border-bottom:1px solid var(--line);
 background:linear-gradient(90deg,#fff,#a0aec0);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
-.content h2{font-size:23px;margin:40px 0 16px;color:#fff;padding-left:12px;border-left:4px solid var(--c1)}
-.content h3{font-size:18px;margin:28px 0 12px;color:var(--accent)}
-.content p{margin:12px 0}
-.content ul,.content ol{margin:12px 0 12px 24px}
-.content li{margin:6px 0}
+.content h2{font-size:22px;margin:44px 0 16px;color:#fff;padding-left:13px;position:relative}
+.content h2::before{content:'';position:absolute;left:0;top:4px;bottom:4px;width:4px;border-radius:2px;
+background:linear-gradient(180deg,var(--c1),var(--c2))}
+.content h3{font-size:17.5px;margin:28px 0 12px;color:var(--accent)}
+.content p{margin:13px 0}
+.content ul,.content ol{margin:13px 0 13px 24px}
+.content li{margin:7px 0}
+.content li::marker{color:var(--accent)}
 .content strong{color:#fff}
-.content blockquote{margin:16px 0;padding:14px 18px;background:linear-gradient(135deg,var(--card),var(--card2));
+.content hr{border:none;height:1px;background:var(--line);margin:34px 0}
+.content blockquote{margin:17px 0;padding:14px 18px;background:linear-gradient(135deg,rgba(0,161,214,.08),rgba(88,86,214,.08));
 border-left:4px solid var(--c2);border-radius:0 12px 12px 0;color:var(--muted)}
-.content table{border-collapse:collapse;width:100%;margin:18px 0;font-size:14px;display:block;overflow-x:auto}
-.content th,.content td{border:1px solid var(--line);padding:9px 14px;text-align:left;white-space:nowrap}
-.content th{background:linear-gradient(90deg,rgba(0,161,214,.2),rgba(88,86,214,.2));color:#fff}
-.content tr:nth-child(even){background:rgba(255,255,255,.02)}
-.content code{font-family:'JetBrains Mono',Consolas,Monaco,monospace;font-size:.92em;
-background:rgba(0,161,214,.12);color:#7dd3fc;padding:2px 7px;border-radius:6px}
-.content pre{margin:16px 0;border-radius:14px;overflow-x:auto;border:1px solid var(--line)}
-.content pre code{display:block;padding:18px 20px;background:#0d1117;color:#e6edf3;font-size:13.5px;line-height:1.7}
-.codehilite{background:#0d1117;border-radius:14px}
-.codehilite pre{margin:0;border:none}
-.pager{display:flex;justify-content:space-between;gap:16px;margin-top:56px;padding-top:24px;border-top:1px solid var(--line)}
+.content table{border-collapse:collapse;width:100%;margin:20px 0;font-size:14px;display:block;overflow-x:auto}
+.content th,.content td{border:1px solid var(--line);padding:9px 15px;text-align:left;white-space:nowrap}
+.content th{background:linear-gradient(90deg,rgba(0,161,214,.22),rgba(88,86,214,.22));color:#fff}
+.content tr:nth-child(even){background:rgba(255,255,255,.025)}
+.content code{font-family:'JetBrains Mono',Consolas,Monaco,monospace;font-size:.9em;
+background:rgba(0,161,214,.13);color:#7dd3fc;padding:2px 7px;border-radius:6px}
+/* 代码块：mac 风格头部 */
+.content pre{margin:18px 0;border-radius:13px;overflow-x:auto;border:1px solid var(--line);
+background:#0d1117;position:relative;padding-top:34px}
+.content pre::before{content:'';position:absolute;top:12px;left:16px;width:11px;height:11px;border-radius:50%;
+background:#ff5f57;box-shadow:18px 0 0 #febc2e,36px 0 0 #28c840}
+.content pre code{display:block;padding:4px 20px 18px;background:transparent;color:#e6edf3;font-size:13.5px;line-height:1.75}
+.codehilite{background:#0d1117;border-radius:13px;border:1px solid var(--line);margin:18px 0;overflow-x:auto;position:relative;padding-top:34px}
+.codehilite::before{content:'';position:absolute;top:12px;left:16px;width:11px;height:11px;border-radius:50%;
+background:#ff5f57;box-shadow:18px 0 0 #febc2e,36px 0 0 #28c840;z-index:1}
+.codehilite pre{margin:0;border:none;background:transparent;padding-top:0}
+/* ===== 组件 ===== */
+.pager{display:flex;justify-content:space-between;gap:16px;max-width:860px;margin:0 auto;padding:0 44px 60px}
 .pager a{flex:1;max-width:48%;padding:14px 20px;background:linear-gradient(135deg,var(--card),var(--card2));
 border:1px solid var(--line);border-radius:14px;color:var(--txt);transition:.25s}
 .pager a:hover{border-color:var(--c1);transform:translateY(-2px)}
-.pager .dir{font-size:12px;color:var(--muted);display:block}
+.pager .dir{font-size:12px;color:var(--muted);display:block;margin-bottom:3px}
 .pager .next{text-align:right;margin-left:auto}
-.toc-inline{background:linear-gradient(135deg,var(--card),var(--card2));border:1px solid var(--line);
-border-radius:14px;padding:18px 22px;margin:20px 0 28px;font-size:14px}
+.toc-inline{background:linear-gradient(135deg,rgba(0,161,214,.1),rgba(88,86,214,.1));border:1px solid var(--line);
+border-radius:14px;padding:18px 22px;margin:20px 0 30px;font-size:14px;line-height:2}
 .toc-inline b{color:#fff}
-.toc-inline a{margin-right:16px;white-space:nowrap}
+.toc-inline a{display:inline-block;margin:3px 14px 3px 0;padding:2px 12px;border-radius:14px;
+background:rgba(255,255,255,.05);transition:.2s}
+.toc-inline a:hover{background:rgba(0,161,214,.25);color:#fff}
 .hero{background:linear-gradient(135deg,var(--c1) 0%,#00c3ff 50%,var(--c2) 100%);border-radius:20px;
-padding:40px 36px;margin-bottom:28px}
-.hero h1{-webkit-text-fill-color:#fff !important;border:none;padding:0;margin:0 0 10px !important;font-size:32px !important}
-.hero p{color:rgba(255,255,255,.92);margin:0}
-.menu-btn{display:none;position:fixed;top:14px;left:14px;z-index:99;background:var(--card);color:#fff;
-border:1px solid var(--line);border-radius:10px;padding:8px 14px;font-size:15px;cursor:pointer}
-@media(max-width:900px){
-.sidebar{position:fixed;left:-300px;transition:.3s;z-index:98;height:100vh}
-.sidebar.open{left:0}
-.main{padding:64px 22px}
+padding:44px 40px;margin-bottom:30px;box-shadow:0 12px 40px rgba(0,161,214,.25)}
+.hero h1{-webkit-text-fill-color:#fff !important;border:none;padding:0;margin:0 0 12px !important;font-size:31px !important}
+.hero p{color:rgba(255,255,255,.93);margin:0}
+.backtop{position:fixed;right:26px;bottom:30px;width:44px;height:44px;border-radius:50%;z-index:95;
+background:linear-gradient(135deg,var(--c1),var(--c2));color:#fff;border:none;font-size:19px;cursor:pointer;
+opacity:0;pointer-events:none;transition:.3s;box-shadow:0 6px 18px rgba(0,161,214,.4)}
+.backtop.show{opacity:1;pointer-events:auto}
+.backtop:hover{transform:translateY(-3px)}
+@media(max-width:960px){
+.article{padding:30px 20px 56px}
+.pager{padding:0 20px 46px}
+.topnav{display:none}
+.sidebar{position:fixed;left:-290px;top:var(--topbar);transition:.28s;z-index:90;height:calc(100vh - var(--topbar))}
+.sidebar.open{left:0;box-shadow:8px 0 30px rgba(0,0,0,.5)}
+.overlay.show{display:block}
 .menu-btn{display:block}}
 pre { line-height: 125%; }
 td.linenos .normal { color: inherit; background-color: transparent; padding-left: 5px; padding-right: 5px; }
@@ -148,18 +192,25 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 .codehilite .vg { color: #F8F8F2 } /* Name.Variable.Global */
 .codehilite .vi { color: #F8F8F2 } /* Name.Variable.Instance */
 .codehilite .vm { color: #F8F8F2 } /* Name.Variable.Magic */
-.codehilite .il { color: #AE81FF } /* Literal.Number.Integer.Long */</style>
+.codehilite .il { color: #AE81FF } /* Literal.Number.Integer.Long */
+.codehilite{background:#0d1117 !important}</style>
 </head>
 <body>
-<button class="menu-btn" onclick="document.querySelector('.sidebar').classList.toggle('open')">☰ 目录</button>
+<div class="progress"></div>
+<header class="topbar">
+  <button class="menu-btn">☰</button>
+  <a class="logo" href="index.html">🐍 Python爬虫入门到实战</a>
+  <nav class="topnav"><a href="index.html" class="">导读</a><a href="prep.html" class="">准备</a><a href="ch1.html" class="">第一章</a><a href="ch2.html" class="">第二章</a><a href="ch3.html" class="">第三章</a><a href="ch4.html" class="">第四章</a><a href="ch5.html" class="">第五章</a><a href="ch6.html" class="active">第六章</a><a href="appendix.html" class="">总结</a></nav>
+  <a class="back-home" href="/promo.html">返回推广页</a>
+</header>
+<div class="overlay"></div>
 <div class="layout">
 <aside class="sidebar">
-  <div class="brand">Python爬虫入门到实战</div>
-  <div class="brand-sub">新手引导课程 · 完整讲义</div>
-  <nav><a href="index.html" class="">课程导读</a><a href="prep.html" class="">课前准备</a><a href="ch1.html" class="">第一章：爬虫基础概念</a><a href="ch2.html" class="">第二章：requests库详解</a><a href="ch3.html" class="">第三章：urllib库详解</a><a href="ch4.html" class="">第四章：BeautifulSoup解析</a><a href="ch5.html" class="">第五章：正则表达式</a><a href="ch6.html" class="active">第六章：实战项目</a><a href="appendix.html" class="">总结与FAQ</a></nav>
+  <div class="side-title">课程导航</div>
+  <nav><a href="index.html" class=""><span class="dot"></span>课程导读</a><a href="prep.html" class=""><span class="dot"></span>课前准备</a><a href="ch1.html" class=""><span class="dot"></span>第一章：爬虫基础概念</a><a href="ch2.html" class=""><span class="dot"></span>第二章：requests库详解</a><a href="ch3.html" class=""><span class="dot"></span>第三章：urllib库详解</a><a href="ch4.html" class=""><span class="dot"></span>第四章：BeautifulSoup解析</a><a href="ch5.html" class=""><span class="dot"></span>第五章：正则表达式</a><a href="ch6.html" class="active"><span class="dot"></span>第六章：实战项目</a><a href="appendix.html" class=""><span class="dot"></span>总结与FAQ</a></nav>
 </aside>
 <main class="main">
-  <div class="content"><h1 id="130-3">第六章：实战项目（1小时30分钟 · 3节课）</h1><div class="toc-inline"><b>本章节目录：</b><br><a href="#17">第17课：实战一——新闻网站爬取与多页采集</a><a href="#18">第18课：实战二——批量图片下载器</a><a href="#19">第19课：实战三——数据存储与分析入门</a></div>
+  <div class="article"><div class="content"><h1 id="130-3">第六章：实战项目（1小时30分钟 · 3节课）</h1><div class="toc-inline"><b>本章节目录</b><br><a href="#17">第17课：实战一——新闻网站爬取与多页采集</a><a href="#18">第18课：实战二——批量图片下载器</a><a href="#19">第19课：实战三——数据存储与分析入门</a></div>
 <p><strong>本章目标</strong>：把前五章的所有技能串成三个完整项目。每个项目都是可以直接运行、稍作修改就能用于真实场景的模板。</p>
 <hr />
 <h2 id="17">第17课：实战一——新闻网站爬取与多页采集</h2>
@@ -564,9 +615,25 @@ save_to_csv()  负责「存储」——数据落地
 <li>扩充停用词表，让热词榜更有信息量。</li>
 <li>综合大作业：任选三个实战项目，把它们串成一条流水线——「项目一抓新闻 → 项目二顺带下载新闻配图 → 项目三分析并出报告」。</li>
 </ol>
-<hr /></div>
+<hr /></div></div>
   <div class="pager"><a href="ch5.html"><span class="dir">← 上一篇</span>第五章：正则表达式</a><a href="appendix.html" class="next"><span class="dir">下一篇 →</span>总结与FAQ</a></div>
 </main>
 </div>
+<button class="backtop" title="返回顶部">↑</button>
+
+<script>
+var bar=document.querySelector('.progress'),bt=document.querySelector('.backtop');
+window.addEventListener('scroll',function(){
+var h=document.documentElement;
+var p=h.scrollTop/(h.scrollHeight-h.clientHeight)*100;
+bar.style.width=p+'%';
+bt.classList.toggle('show',h.scrollTop>400);});
+bt.onclick=function(){window.scrollTo({top:0,behavior:'smooth'})};
+var mb=document.querySelector('.menu-btn'),sb=document.querySelector('.sidebar'),ov=document.querySelector('.overlay');
+if(mb){mb.onclick=function(){sb.classList.toggle('open');ov.classList.toggle('show')};
+ov.onclick=function(){sb.classList.remove('open');ov.classList.remove('show')};
+sb.querySelectorAll('a').forEach(function(a){a.onclick=function(){sb.classList.remove('open');ov.classList.remove('show')}})}
+</script>
+
 </body>
 </html>
